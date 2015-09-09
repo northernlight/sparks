@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sparks Blog</title>
+    <description>Sparks is a project that will provide a rapid, secure and easy-to-use many-to-many conferencing tool based on WebRTC once it's finished :)</description>
+    <link>http://northernlight.github.io/sparks/</link>
+    <atom:link href="http://northernlight.github.io/sparks/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Tue, 08 Sep 2015 20:39:41 -0500</pubDate>
+    <lastBuildDate>Tue, 08 Sep 2015 20:39:41 -0500</lastBuildDate>
+    <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Welcome to Sparks</title>
+        <description>&lt;p&gt;Welcome to Sparks!&lt;/p&gt;
+
+&lt;p&gt;Our Sparks project is trying to realize and establish an easy and secure audio- and video-connection between serveral 
+participants all over the world.&lt;/p&gt;
+
+&lt;p&gt;The goal is to provide a application - only used in the browser - that implements e.g. videochatrooms that can be easily 
+set up by entering a username and generating a unique room-id afterwards. Once the meeting room is created, it should be
+possible to invite and add friends or business partners to join the call without any further registration.&lt;/p&gt;
+
+&lt;p&gt;We would like to ensure a secure connection with using encrypted P2P-connections created with the WebRTC API.
+Furthermore we will work on a traffic load-balancing algorithm to make sure every user can maintain a fluent stream.&lt;/p&gt;
+
+&lt;p&gt;But for now, we have just set up this basic blog, where you will be abled to follow the project progress.
+If you&amp;#39;re interested in our work, feel free to subscribe to our RSS-Feed :)&lt;/p&gt;
+</description>
+        <pubDate>Tue, 08 Sep 2015 20:00:00 -0500</pubDate>
+        <link>http://northernlight.github.io/sparks/jekyll/2015/09/08/welcome-to-sparks/</link>
+        <guid isPermaLink="true">http://northernlight.github.io/sparks/jekyll/2015/09/08/welcome-to-sparks/</guid>
+        
+        <category>welcome</category>
+        
+        <category>to</category>
+        
+        <category>sparks</category>
+        
+        <category>WebRTC</category>
+        
+        
+        <category>jekyll</category>
+        
+      </item>
+    
+  </channel>
+</rss>

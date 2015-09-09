@@ -1,0 +1,21 @@
+# Site settings
+title: "Sparks Blog"
+email: dominik.bayerl@gmail.com, sebastian.renner1@gmx.de
+description: "Sparks is a project that will provide a rapid, secure and easy-to-use many-to-many conferencing tool based on WebRTC once it's finished :)"
+baseurl: "/sparks"
+url: "http://northernlight.github.io"
+title_description: "Sparks is a project that will provide a rapid, secure and easy-to-use many-to-many conferencing tool based on WebRTC once it's finished :)"
+github_repository: https://github.com/northernlight/sparks
+addthis_id: ra-513c6fa83da6ec67
+post_limit: 5
+
+# Social usernames/URLs
+twitter_username: ckanibal
+github_username:  northernlight
+
+# Build settings
+markdown: redcarpet
+redcarpet:
+  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "strikethrough", "superscript"]
+permalink: pretty
+exclude: [vendor]
