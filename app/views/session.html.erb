@@ -8,7 +8,13 @@
   <video id="localVideo">Video stream not available.</video>
   <video id="remoteVideo">Video stream not available.</video>
   <script>
-//    (function() {
+    errorHandler = function(trace) {
+      return function(msg) {
+        console.log("could not " + trace + ": " + msg);
+      }
+    };
+
+    (function() {
       var peerConnection = new RTCPeerConnection();
       var streamOffered = false, answerSent = false;
 
@@ -46,8 +52,8 @@
             request.open("POST", '/stream/offer/<%= @id %>', false);
             request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             request.send(JSON.stringify(sessionDescription.toJSON()));
-          }, function(error) { console.log("could not setLocalDescription: " + error)});
-        }, function(error) { console.log("could not createOffer: " + error)});
+          }, errorHandler("setLocalDescription"));
+        }, errorHandler("createOffer"));
       });
 
       source.addEventListener('offer', function(evt) {
@@ -66,9 +72,9 @@
                   request.open("POST", '/stream/answer/<%= @id %>', false);
                   request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
                   request.send(JSON.stringify(sessionDescription.toJSON()));
-                }, function(err) {console.log("could not setLocalDescription:" + err)});
-              }, function(err) {console.log("could not createAnswer: " + err)});
-            }, function(err) {console.log("could not setRemoteDescription: " + err)});
+                }, errorHandler("setLocalDescription"));
+              }, errorHandler("createAnswer"));
+            }, errorHandler("setRemoteDescription"));
           }
         } else {
           peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
@@ -83,14 +89,14 @@
           if (!answerSent) {
             peerConnection.setRemoteDescription(new RTCSessionDescription(signal), function() {
               console.log('answer: remote connection established');
-            }, function(err) {console.log('could not setRemoteDescription: ' + err)});
+            }, errorHandler("setRemoteDescription"));
           }
         }
         else {
           peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
         }
       });
-      }, function(err) {console.log("could not getUserMedia: " + err)});
-//    })();
+    }, errorHandler("getUserMedia"));
+    })();
   </script>
 </body>
