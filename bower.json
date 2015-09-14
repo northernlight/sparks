@@ -1,0 +1,7 @@
+{
+  "name": "sparks-alpha",
+  "version": "0.0.0",
+  "dependencies": {
+    "webrtc-adapter": "~0.2.3"
+  }
+}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Session running</title>
+  <script src="/bower_components/webrtc-adapter/adapter.js"></script>
+</head>
+<body>
+  <video id="localVideo">Video stream not available.</video>
+  <video id="remoteVideo">Video stream not available.</video>
+  <script>
+//    (function() {
+      var peerConnection = new RTCPeerConnection();
+      var streamOffered = false, answerSent = false;
+
+      peerConnection.onaddstream = function(obj) {
+        console.log("onaddstream()");
+        var vid = document.getElementById("remoteVideo");
+        vid.srcObject = obj.stream;
+        vid.onloadedmetadata = function(e) {
+          vid.play();
+        };
+      }
+
+      // == Step 1: setup local video stream == //
+      navigator.getUserMedia({audio: false, video: true}, function(stream) {
+        var video = document.getElementById("localVideo");
+        video.src = window.URL.createObjectURL(stream);
+        peerConnection.addStream(stream);
+
+        video.onloadedmetadata = function(e) {
+          video.play();
+        };
+
+      // == Step 2: on client join => create offer to client == //
+      var source = new EventSource('/stream/<%= @id %>');
+      source.addEventListener('client', function(evt) {
+        console.log('New client joined:', evt.data);
+
+        if(streamOffered) return;
+        peerConnection.createOffer(function(offer) {
+          streamOffered = true;
+          var sessionDescription = new RTCSessionDescription(offer);
+          peerConnection.setLocalDescription(sessionDescription, function() {
+            // signal session information to server
+            var request = new XMLHttpRequest();
+            request.open("POST", '/stream/offer/<%= @id %>', false);
+            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            request.send(JSON.stringify(sessionDescription.toJSON()));
+          }, function(error) { console.log("could not setLocalDescription: " + error)});
+        }, function(error) { console.log("could not createOffer: " + error)});
+      });
+
+      source.addEventListener('offer', function(evt) {
+        var signal = JSON.parse(evt.data);
+        if (signal.sdp) {
+          // NO, U MAKE ME A SANDWICH.
+          if (!streamOffered) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(signal), function() {
+              console.log('offer: got remote description');
+              peerConnection.createAnswer(function(answer) {
+                answerSent = true;
+                sessionDescription = new RTCSessionDescription(answer);
+                peerConnection.setLocalDescription(sessionDescription, function() {
+                  // send the answer to a server to be forwarded back to the caller (you)
+                  var request = new XMLHttpRequest();
+                  request.open("POST", '/stream/answer/<%= @id %>', false);
+                  request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                  request.send(JSON.stringify(sessionDescription.toJSON()));
+                }, function(err) {console.log("could not setLocalDescription:" + err)});
+              }, function(err) {console.log("could not createAnswer: " + err)});
+            }, function(err) {console.log("could not setRemoteDescription: " + err)});
+          }
+        } else {
+          peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
+        }
+      });
+
+      source.addEventListener('answer', function(evt) {
+        // sweet, we have an answer => handshake complete
+        var signal = JSON.parse(evt.data);
+        if (signal.sdp) {
+          // … wasn't me, right?
+          if (!answerSent) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(signal), function() {
+              console.log('answer: remote connection established');
+            }, function(err) {console.log('could not setRemoteDescription: ' + err)});
+          }
+        }
+        else {
+          peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
+        }
+      });
+      }, function(err) {console.log("could not getUserMedia: " + err)});
+//    })();
+  </script>
+</body>
