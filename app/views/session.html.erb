@@ -5,11 +5,12 @@
   <script src="/bower_components/webrtc-adapter/adapter.js"></script>
 </head>
 <body>
-  <video id="localVideo">Video stream not available.</video>
-  <video id="remoteVideo">Video stream not available.</video>
+  <video id="localVideo" autoplay>Video stream not available.</video>
+  <video id="remoteVideo" autoplay>Video stream not available.</video>
   <script>
     errorHandler = function(trace) {
       return function(msg) {
+        trace("could not " + trace + ": " + msg);
         console.log("could not " + trace + ": " + msg);
       }
     };
@@ -21,7 +22,7 @@
       peerConnection.onaddstream = function(obj) {
         console.log("onaddstream()");
         var vid = document.getElementById("remoteVideo");
-        vid.srcObject = obj.stream;
+        vid.src = URL.createObjectURL(obj.stream);
         vid.onloadedmetadata = function(e) {
           vid.play();
         };
@@ -41,6 +42,17 @@
       var source = new EventSource('/stream/<%= @id %>');
       source.addEventListener('client', function(evt) {
         console.log('New client joined:', evt.data);
+
+        peerConnection.onicecandidate = function(event) {
+          if (event.candidate) {
+            console.log('Local ICE candidate: \n' + event.candidate);
+            // signal ice information to server
+            var request = new XMLHttpRequest();
+            request.open("POST", '/stream/answer/<%= @id %>', false);
+            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            request.send(JSON.stringify({'candidate': event.candidate}));
+          }
+        }
 
         if(streamOffered) return;
         peerConnection.createOffer(function(offer) {
@@ -71,7 +83,7 @@
                   var request = new XMLHttpRequest();
                   request.open("POST", '/stream/answer/<%= @id %>', false);
                   request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                  request.send(JSON.stringify(sessionDescription.toJSON()));
+                  request.send(JSON.stringify({'sdp': sessionDescription}));
                 }, errorHandler("setLocalDescription"));
               }, errorHandler("createAnswer"));
             }, errorHandler("setRemoteDescription"));
@@ -87,7 +99,7 @@
         if (signal.sdp) {
           // … wasn't me, right?
           if (!answerSent) {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(signal), function() {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp), function() {
               console.log('answer: remote connection established');
             }, errorHandler("setRemoteDescription"));
           }
