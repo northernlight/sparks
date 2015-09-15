@@ -2,12 +2,40 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Sparks Blog</title>
-    <description>Sparks is a project that will provide a rapid, secure and easy-to-use many-to-many conferencing tool based on WebRTC once it's finished :)</description>
+    <description>Sparks is a project that will provide a rapid, secure and easy-to-use many-to-many conferencing tool based on WebRTC once it&#39;s finished :)</description>
     <link>http://northernlight.github.io/sparks/</link>
     <atom:link href="http://northernlight.github.io/sparks/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 08 Sep 2015 20:39:41 -0500</pubDate>
-    <lastBuildDate>Tue, 08 Sep 2015 20:39:41 -0500</lastBuildDate>
+    <pubDate>Mon, 14 Sep 2015 20:28:03 -0500</pubDate>
+    <lastBuildDate>Mon, 14 Sep 2015 20:28:03 -0500</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>TechDemo!</title>
+        <description>&lt;p&gt;First demo is up and running!&lt;/p&gt;
+
+&lt;p&gt;We can announce very happily, that we managed to get our first little techdemo ready :)&lt;/p&gt;
+
+&lt;p&gt;With the latest git code you should now be abled to simulate a simple 1-to-1 session including session-generation, WebCam-access and video-stream capability.
+From now on we will work on n-to-n communication and also on a nicer state handling.&lt;/p&gt;
+
+&lt;p&gt;Stay tuned for more #progress!&lt;/p&gt;
+</description>
+        <pubDate>Mon, 14 Sep 2015 00:00:00 -0500</pubDate>
+        <link>http://northernlight.github.io/sparks/jekyll/2015/09/14/tec-demo/</link>
+        <guid isPermaLink="true">http://northernlight.github.io/sparks/jekyll/2015/09/14/tec-demo/</guid>
+        
+        <category>success</category>
+        
+        <category>techdemo</category>
+        
+        <category>progress</category>
+        
+        <category>WebRTC</category>
+        
+        
+        <category>jekyll</category>
+        
+      </item>
     
       <item>
         <title>Welcome to Sparks</title>
