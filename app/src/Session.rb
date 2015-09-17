@@ -3,9 +3,13 @@
 require 'securerandom'
 
 require_relative 'User'
+require_relative 'JsonSerializable'
 
 class Session
   attr_reader :id
+
+  include JsonSerializable
+
   def initialize(id = SecureRandom.urlsafe_base64)
     @id = id
     @users = []
