@@ -16,7 +16,6 @@ class User
   end
 
   def send_message(msg)
-    puts msg
     socket.write msg.to_s
   end
 

@@ -21,14 +21,14 @@ class Server < Angelo::Base
     session_id = params[:session_id].to_sym
     if $sessions.has_key? session_id
       session = $sessions[session_id]
-      user = User.new(session)
-      user.socket = ws
-      if session.on_join(user)
-        msg = MsgJoin.new(user)
-        user.send_message(msg)
-      else
-        user.send_message(MsgError.new("could not join channel"))
-      end
+      User.new(session).tap {|user|
+        user.socket = ws
+        if session.on_join(user)
+          user.send_message(MsgJoin.new(user))
+        else
+          user.send_message(MsgError.new("could not join channel"))
+        end
+      }
     else
       ws.write MsgError.new("no such session id").to_s
     end
