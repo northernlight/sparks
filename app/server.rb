@@ -1,42 +1,40 @@
 require 'liquid'
 require 'angelo'
-require 'securerandom'
+
+require_relative 'src/Session.rb'
+require_relative 'src/User.rb'
 
 class Server < Angelo::Base
   report_errors!
   log_level Logger::INFO
 
   get '/' do
-    redirect "/session/#{SecureRandom.urlsafe_base64}"
+    Session.new.tap {|session|
+      @sessions[session.id.to_sym] = session
+      redirect "/session/#{session.id}"
+    }
+  end
+
+  websocket '/:session_id' do |ws|
+    session_id = params[:session_id].to_sym
+    if @sessions.has_key? session_id
+      session = @sessions[session_id]
+      User.new(session).tap{|user|
+        user.socket = ws
+        if session.onJoin(user)
+          user.sendMessage(MsgJoin.new(user))
+        else
+          user.sendMessage(MsgError.new("could not join channel"))
+        end
+      }
+    else
+      raise MsgError.new("no such session id")
+    end
   end
 
   get '/session/:id' do
     @id = params[:id]
     erb :session
-  end
-
-  eventsource '/stream/:id' do |s|
-    id = params[:id].to_sym
-    sses[id].each {|peer|
-      s.event :client, peer.socket.to_io.peeraddr[-1]
-#      peer.event :client, s.socket.to_io.peeraddr[-1]
-    }
-    sses[id] << s
-  end
-
-  post '/stream/:method/:id' do
-    id = params[:id].to_sym
-    method = params[:method].to_sym
-    case method
-    when :offer
-      sses[id].event :offer, params.to_json
-    when :answer
-      sses[id].event :answer, params.to_json
-    end
-  end
-
-  get '/test' do
-    erb :test
   end
 end
 

@@ -13,6 +13,7 @@
   <video id="localVideo" autoplay>Video stream not available.</video>
   <video id="remoteVideo" autoplay>Video stream not available.</video>
   <script>
+    // === define error handler ===
     errorHandler = function(trace) {
       return function(msg) {
         trace("could not " + trace + ": " + msg);
