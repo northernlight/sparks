@@ -10,4 +10,16 @@ class Msg
     }
     return data.to_json
   end
+
+  def to_str
+    self.to_json
+  end
+
+  def to_s
+    self.to_json
+  end
 end
+
+require_relative 'MsgError.rb'
+require_relative 'MsgJoin.rb'
+require_relative 'MsgLeave.rb'

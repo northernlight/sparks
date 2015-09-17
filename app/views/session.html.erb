@@ -23,7 +23,6 @@
 
     (function() {
       var peerConnection = new RTCPeerConnection();
-      var streamOffered = false, answerSent = false;
 
       peerConnection.onaddstream = function(obj) {
         console.log("onaddstream()");
@@ -44,77 +43,83 @@
           video.play();
         };
 
-      // == Step 2: on client join => create offer to client == //
-      var source = new EventSource('/stream/<%= @id %>');
-      source.addEventListener('client', function(evt) {
-        console.log('New client joined:', evt.data);
+        // == Step 2: on client join => create offer to client == //
+        var socket = new WebSocket("ws://localhost:4567/session/<%= @id %>");
+        socket.onopen = function (event) {
+          console.log("websocket established");
+        };
+        socket.onmessage = function (event) {
+          console.log(event.data);
+        };
 
-        peerConnection.onicecandidate = function(event) {
-          if (event.candidate) {
-            console.log('Local ICE candidate: \n' + event.candidate);
-            // signal ice information to server
-            var request = new XMLHttpRequest();
-            request.open("POST", '/stream/answer/<%= @id %>', false);
-            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            request.send(JSON.stringify({'candidate': event.candidate}));
+        /*
+          peerConnection.onicecandidate = function(event) {
+            if (event.candidate) {
+              console.log('Local ICE candidate: \n' + event.candidate);
+              // signal ice information to server
+              var request = new XMLHttpRequest();
+              request.open("POST", '/stream/answer/<%= @id %>', false);
+              request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+              request.send(JSON.stringify({'candidate': event.candidate}));
+            }
           }
-        }
 
-        if(streamOffered) return;
-        peerConnection.createOffer(function(offer) {
-          streamOffered = true;
-          var sessionDescription = new RTCSessionDescription(offer);
-          peerConnection.setLocalDescription(sessionDescription, function() {
-            // signal session information to server
-            var request = new XMLHttpRequest();
-            request.open("POST", '/stream/offer/<%= @id %>', false);
-            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            request.send(JSON.stringify(sessionDescription.toJSON()));
-          }, errorHandler("setLocalDescription"));
-        }, errorHandler("createOffer"));
-      });
+          if(streamOffered) return;
+          peerConnection.createOffer(function(offer) {
+            streamOffered = true;
+            var sessionDescription = new RTCSessionDescription(offer);
+            peerConnection.setLocalDescription(sessionDescription, function() {
+              // signal session information to server
+              var request = new XMLHttpRequest();
+              request.open("POST", '/stream/offer/<%= @id %>', false);
+              request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+              request.send(JSON.stringify(sessionDescription.toJSON()));
+            }, errorHandler("setLocalDescription"));
+          }, errorHandler("createOffer"));
+        });
 
-      source.addEventListener('offer', function(evt) {
-        var signal = JSON.parse(evt.data);
-        if (signal.sdp) {
-          // NO, U MAKE ME A SANDWICH.
-          if (!streamOffered) {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(signal), function() {
-              console.log('offer: got remote description');
-              peerConnection.createAnswer(function(answer) {
-                answerSent = true;
-                sessionDescription = new RTCSessionDescription(answer);
-                peerConnection.setLocalDescription(sessionDescription, function() {
-                  // send the answer to a server to be forwarded back to the caller (you)
-                  var request = new XMLHttpRequest();
-                  request.open("POST", '/stream/answer/<%= @id %>', false);
-                  request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                  request.send(JSON.stringify({'sdp': sessionDescription}));
-                }, errorHandler("setLocalDescription"));
-              }, errorHandler("createAnswer"));
-            }, errorHandler("setRemoteDescription"));
+        source.addEventListener('offer', function(evt) {
+          var signal = JSON.parse(evt.data);
+          if (signal.sdp) {
+            // NO, U MAKE ME A SANDWICH.
+            if (!streamOffered) {
+              peerConnection.setRemoteDescription(new RTCSessionDescription(signal), function() {
+                console.log('offer: got remote description');
+                peerConnection.createAnswer(function(answer) {
+                  answerSent = true;
+                  sessionDescription = new RTCSessionDescription(answer);
+                  peerConnection.setLocalDescription(sessionDescription, function() {
+                    // send the answer to a server to be forwarded back to the caller (you)
+                    var request = new XMLHttpRequest();
+                    request.open("POST", '/stream/answer/<%= @id %>', false);
+                    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                    request.send(JSON.stringify({'sdp': sessionDescription}));
+                  }, errorHandler("setLocalDescription"));
+                }, errorHandler("createAnswer"));
+              }, errorHandler("setRemoteDescription"));
+            }
+          } else {
+            peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
           }
-        } else {
-          peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
-        }
-      });
+        });
 
-      source.addEventListener('answer', function(evt) {
-        // sweet, we have an answer => handshake complete
-        var signal = JSON.parse(evt.data);
-        if (signal.sdp) {
-          // … wasn't me, right?
-          if (!answerSent) {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp), function() {
-              console.log('answer: remote connection established');
-            }, errorHandler("setRemoteDescription"));
+        source.addEventListener('answer', function(evt) {
+          // sweet, we have an answer => handshake complete
+          var signal = JSON.parse(evt.data);
+          if (signal.sdp) {
+            // … wasn't me, right?
+            if (!answerSent) {
+              peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp), function() {
+                console.log('answer: remote connection established');
+              }, errorHandler("setRemoteDescription"));
+            }
           }
-        }
-        else {
-          peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
-        }
-      });
-    }, errorHandler("getUserMedia"));
+          else {
+            peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
+          }
+        });
+        */
+      }, errorHandler("getUserMedia"));
     })();
   </script>
 </body>

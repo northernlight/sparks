@@ -8,19 +8,20 @@ class Session
   attr_reader :id
   def initialize(id = SecureRandom.urlsafe_base64)
     @id = id
+    @users = []
   end
 
-  def onJoin(user)
+  def on_join(user)
     @users.each {|peer|
-      peer.sendMessage(new MsgJoin(user))
+      peer.send_message(new MsgJoin(user))
     }
     @users << user
   end
 
-  def onLeave(user)
+  def on_leave(user)
     @users.delete(user)
     @users.each {|peer|
-      peer.sendMessage(new MsgLeave(user))
+      peer.send_message(new MsgLeave(user))
     }
   end
 end
