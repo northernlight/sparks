@@ -10,8 +10,7 @@ module JsonSerializable
       vars = self.fields()
     end
     vars.each {|var|
-      val = self.instance_variable_get(var)
-      data[var.to_s.delete("@").to_sym] = if val.is_a? Numeric then val else val.to_s end
+      data[var.to_s.delete("@").to_sym] = self.instance_variable_get(var).to_json
     }
     return JSON.generate(data)
   end
