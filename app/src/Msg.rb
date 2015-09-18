@@ -10,3 +10,4 @@ end
 require_relative 'MsgError'
 require_relative 'MsgJoin'
 require_relative 'MsgLeave'
+require_relative 'MsgPing'
