@@ -6,8 +6,8 @@ require_relative 'User'
 require_relative 'JsonSerializable'
 
 class Session
-  attr_reader :id
-
+  attr_reader :id, :users
+  
   include JsonSerializable
 
   def initialize(id = SecureRandom.urlsafe_base64)

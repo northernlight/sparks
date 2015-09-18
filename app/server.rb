@@ -24,7 +24,7 @@ class Server < Angelo::Base
       User.new(session).tap {|user|
         user.socket = ws
         if session.on_join(user)
-          user.send_message(MsgJoin.new(user, is_self: true))
+          user.send_message(MsgNewUser.new(user, count: session.users.count))
         else
           user.send_message(MsgError.new("could not join channel"))
         end
