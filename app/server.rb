@@ -19,6 +19,12 @@ class Server < Angelo::Base
 
   websocket '/session/:session_id' do |ws|
     session_id = params[:session_id].to_sym
+
+    # create session -> debug only feature?
+    if not $sessions.has_key? session_id
+      $sessions[session_id] = Session.new(session_id)
+    end
+
     if $sessions.has_key? session_id
       session = $sessions[session_id]
       User.new(session).tap {|user|
