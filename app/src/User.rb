@@ -30,6 +30,7 @@ class User
       begin
         on_message(@socket.read) # this seems to be blocking.
       rescue
+        terminate
         on_close
       end
     }
@@ -38,7 +39,7 @@ class User
   def send_message(msg)
     begin
       @socket.write msg.to_json
-    rescue 
+    rescue
       on_close
     end
   end
