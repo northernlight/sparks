@@ -7,7 +7,7 @@ require_relative 'JsonSerializable'
 
 class Session
   attr_reader :id, :users
-  
+
   include JsonSerializable
 
   def initialize(id = SecureRandom.urlsafe_base64)
@@ -27,5 +27,9 @@ class Session
     @users.each {|peer|
       peer.send_message(MsgLeave.new(user))
     }
+  end
+
+  def beat(fun)
+    @users.each &fun
   end
 end
