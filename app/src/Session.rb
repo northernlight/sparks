@@ -17,7 +17,11 @@ class Session
 
   def on_join(user)
     @users.each {|peer|
-      peer.send_message(MsgJoin.new(user))
+      begin
+        peer.send_message(MsgJoin.new(user))
+      rescue Exception => e
+        puts e.inspect
+      end
     }
     @users << user
   end
@@ -25,7 +29,11 @@ class Session
   def on_leave(user)
     @users.delete(user)
     @users.each {|peer|
-      peer.send_message(MsgLeave.new(user))
+      begin
+        peer.send_message(MsgLeave.new(user))
+      rescue Exception => e
+        puts e.inspect  
+      end
     }
   end
 

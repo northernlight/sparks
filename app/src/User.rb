@@ -29,7 +29,8 @@ class User
     Celluloid.every(CYCLE_TIME) {
       begin
         on_message(@socket.read) # this seems to be blocking.
-      rescue
+      rescue Exception => e
+        puts e.inspect
         terminate
         on_close
       end
@@ -45,6 +46,7 @@ class User
   end
 
   def on_message(msg)
+    puts msg
     case JSON.parse(msg)['type']
     when 'MsgOffer'
       msg = MsgOffer.new.from_json!(msg)
@@ -52,6 +54,9 @@ class User
     when 'MsgAnswer'
       msg = MsgAnswer.new.from_json!(msg)
       @session.beat (lambda do |user| user.send_message(msg) if msg.to == user.id end)
+    when 'MsgICE'
+      msg = MsgICE.new.from_json!(msg)
+      @session.beat(lambda do |user| user.send_message(msg) unless msg.from == user.id end)
     else
       puts "Unkown message type #{JSON.parse(msg)['type']}"
     end
