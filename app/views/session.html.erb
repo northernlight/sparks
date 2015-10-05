@@ -15,12 +15,14 @@
   <video id="localVideo" autoplay>Video stream not available.</video>
   <video id="remoteVideo" autoplay>Video stream not available.</video>
   <script>
-    // == Step 0: define error handler == //
+    // == Step 0: define error handler and global variables == //
     errorHandler = function(trace) {
       return function(msg) {
         console.log("could not " + trace + ": " + msg);
       }
     };
+
+    var self = null;
 
     var rtcSessions = [];
     (function() {
@@ -46,7 +48,9 @@
               // pong
               break;
             case 'MsgNewUser':
-              if(msg.users_count >= 1) {
+              self = msg.user;
+              // currently we send out the offer regardless of user count
+              if(msg.users_count >= 0) {
                 // send offer
                 var rtcConnection = new RTCAbstraction();
                 rtcConnection.addStream(stream);
@@ -54,9 +58,9 @@
                   var msg = JSON.stringify({
                     // TODO: add uuid for offers
                     'type': 'MsgOffer',
+                    'from': self.id,
                     'offer': offer
                   });
-                  console.log(msg);
                   socket.send(msg);
                 });
                 rtcSessions.push(rtcConnection);

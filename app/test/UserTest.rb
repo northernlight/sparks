@@ -15,8 +15,14 @@ class TestUser < Test::Unit::TestCase
 
   def test_serialize
     user = User.new(Object.new)
-    assert_nothing_raised do user.to_s end
-    assert_equal(user.to_s, user.to_str)
-    assert_equal(user.to_str, user.to_json)
+    assert_nothing_raised do user.to_json end
+  end
+
+  def test_deserialize
+    user1 = User.new(Object.new)
+    user2 = User.new(Object.new)
+    user2.from_json!(user1.to_json)
+
+    assert_equal(user1.id, user2.id)
   end
 end

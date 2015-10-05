@@ -1,28 +1,56 @@
 #!/usr/bin/env ruby
 
 require 'securerandom'
+require 'celluloid/io'
+
 require_relative 'JsonSerializable'
 require_relative 'Msg'
 
 class User
-  CYCLE_TIME = 10
+  CYCLE_TIME = 1
 
   attr_reader :id, :session, :socket
 
-  include JsonSerializable, Celluloid
+  include JsonSerializable, Celluloid::IO
 
   def initialize(session, id = SecureRandom.urlsafe_base64)
     @session = session
     @id = id
   end
 
+  def to_h
+    return {
+      id: @id
+    }
+  end
+
   def socket=(socket)
     @socket = socket
-    self.async.track_socket
+    Celluloid.every(CYCLE_TIME) {
+      begin
+        on_message(@socket.read) # this seems to be blocking.
+      rescue
+        on_close
+      end
+    }
   end
 
   def send_message(msg)
-    socket.write msg.to_s
+    begin
+      @socket.write msg.to_json
+    rescue 
+      on_close
+    end
+  end
+
+  def on_message(msg)
+    case JSON.parse(msg)['type']
+    when 'MsgOffer'
+      msg = MsgOffer.new.from_json!(msg)
+      @session.beat (lambda do |user| user.send_message(msg) unless msg.from == user.id end)
+    else
+      puts "Unkown message type"
+    end
   end
 
   def on_close
@@ -31,23 +59,5 @@ class User
 
   def fields
     return ['@id']
-  end
-
-  def track_socket
-    begin
-      catch :done do
-        loop do
-          if @socket.closed? then
-            # FIXME: this will never be reached - why?
-            throw :done
-          end
-          send_message(MsgPing.new)
-          sleep(CYCLE_TIME)
-        end
-      end
-    rescue Reel::SocketError
-    ensure
-      on_close
-    end
   end
 end
