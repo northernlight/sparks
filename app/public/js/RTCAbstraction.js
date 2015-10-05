@@ -21,7 +21,7 @@ var RTCAbstraction = function() {
     if(event.candidate && this.onicecandidate) {
       this.onicecandidate(event);
     }
-  };
+  }.bind(this);
   this.addStream = peerConnection.addStream.bind(peerConnection);
 
   // == enrich with own api == //
