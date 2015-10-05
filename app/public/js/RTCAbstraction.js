@@ -8,7 +8,7 @@ var RTCAbstraction = function() {
   // this.prototype.onicecandidate = null;
   // this.prototype.onaddstream = null;
 
-  errorHandler = function(trace) {
+  var errorHandler = function(trace) {
     return function(msg) {
       console.log("could not " + trace + ": " + msg);
     }

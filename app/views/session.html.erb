@@ -18,7 +18,7 @@
     // == Step 0: define error handler and global variables == //
     errorHandler = function(trace) {
       return function(msg) {
-        console.log("could not " + trace + ": " + msg);
+        throw new Error("error in " + trace + ": " + msg);
       }
     };
 
@@ -56,7 +56,6 @@
                 rtcConnection.addStream(stream);
                 rtcConnection.createOffer(function(offer) {
                   var msg = JSON.stringify({
-                    // TODO: add uuid for offers
                     'type': 'MsgOffer',
                     'from': self.id,
                     'offer': offer
@@ -70,7 +69,8 @@
               }
               break;
             case 'MsgOffer':
-
+              errorHandler("socket.onMessage")("MsgOffer not yet implemented.");
+              break;
             default:
               errorHandler("socket.onMessage")("no such message type: " + msg.type);
               break;
