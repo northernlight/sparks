@@ -69,7 +69,25 @@
               }
               break;
             case 'MsgOffer':
-              errorHandler("socket.onMessage")("MsgOffer not yet implemented.");
+              var rtcConnection = new RTCAbstraction();
+              rtcConnection.addStream(stream);
+              rtcConnection.receiveOffer(msg.offer);
+              rtcConnection.createAnswer(function(answer) {
+                var msgAnswer = JSON.stringify({
+                  'type': 'MsgAnswer',
+                  'from': self.id,
+                  'to': msg.from,
+                  'answer': answer
+                });
+                socket.send(msgAnswer);
+              });
+              break;
+            case 'MsgAnswer':
+              if (msg.to != self.id)
+                errorHandler("socket.onMessage")("received foreign answer (this should never happen)");
+              else {
+                errorHandler("socket.onMessage")("MsgAnswer not yet implemented.");
+              }
               break;
             default:
               errorHandler("socket.onMessage")("no such message type: " + msg.type);

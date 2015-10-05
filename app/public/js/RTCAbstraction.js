@@ -55,11 +55,11 @@ var RTCAbstraction = function() {
     * must be called after receiveOffer - otherwise fail %(
     * @return RTCSessionDescription
     */
-  this.createAnswer = function() {
+  this.createAnswer = function(callback) {
     peerConnection.createAnswer(function(answer) {
       sessionDescription = new RTCSessionDescription(answer);
       peerConnection.setLocalDescription(sessionDescription, function() {
-        return sessionDescription;
+        callback(sessionDescription);
       }, errorHandler("setLocalDescription"));
     }, errorHandler("createAnswer"));
   };

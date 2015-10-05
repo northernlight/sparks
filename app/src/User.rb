@@ -49,8 +49,11 @@ class User
     when 'MsgOffer'
       msg = MsgOffer.new.from_json!(msg)
       @session.beat (lambda do |user| user.send_message(msg) unless msg.from == user.id end)
+    when 'MsgAnswer'
+      msg = MsgAnswer.new.from_json!(msg)
+      @session.beat (lambda do |user| user.send_message(msg) if msg.to == user.id end)
     else
-      puts "Unkown message type"
+      puts "Unkown message type #{JSON.parse(msg)['type']}"
     end
   end
 
