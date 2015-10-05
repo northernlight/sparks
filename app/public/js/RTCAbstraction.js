@@ -16,7 +16,11 @@ var RTCAbstraction = function() {
 
   // == setup RTCPeerConnection and forward public api == //
   var peerConnection = this.rawConnection = new RTCPeerConnection();
-  peerConnection.onaddstream = this.onaddstream;
+  peerConnection.onaddstream = function(event) {
+    if(this.onaddstream) {
+      this.onaddstream(event);
+    }
+  }.bind(this);
   peerConnection.onicecandidate = function(event) {
     if(event.candidate && this.onicecandidate) {
       this.onicecandidate(event);
@@ -71,8 +75,16 @@ var RTCAbstraction = function() {
     * @return void
     */
   this.receiveAnswer = function(answer) {
-    peerConnection.setRemoteDescription(new RTCSessionDescription(answer.sdp), function() {
+    peerConnection.setRemoteDescription(new RTCSessionDescription(answer), function() {
       console.log('answer: remote connection established');
     }, errorHandler("setRemoteDescription"));
+  };
+
+  /**
+    */
+  this.addIceCandidate = function(signal) {
+    peerConnection.addIceCandidate(new RTCIceCandidate(signal), function() {
+      console.log('successfully added ice candidate');
+    }, errorHandler("addIceCandidate"));
   };
 };
