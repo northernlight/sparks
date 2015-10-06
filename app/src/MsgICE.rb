@@ -3,9 +3,9 @@
 require_relative 'Msg'
 
 class MsgICE < Msg
-  attr_reader :from, :candidate
+  attr_reader :from, :to, :candidate
 
   def fields
-    ['@from', '@candidate']
+    ['@from', '@to', '@candidate']
   end
 end
