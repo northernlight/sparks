@@ -3,7 +3,7 @@
 require_relative 'Msg'
 
 class MsgOffer < Msg
-  attr_reader :from, :to, :offer
+  attr_accessor :from, :to, :offer
 
   def fields
     ['@from', '@to', '@offer']

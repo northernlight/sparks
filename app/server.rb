@@ -1,6 +1,8 @@
 require 'liquid'
 require 'angelo'
 
+require_relative 'config'
+
 require_relative 'src/Session'
 require_relative 'src/User'
 require_relative 'src/Msg'

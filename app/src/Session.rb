@@ -27,12 +27,12 @@ class Session
   end
 
   def on_leave(user)
-    @users.delete(user)
+    @users.delete!(user)
     @users.each {|peer|
       begin
         peer.send_message(MsgLeave.new(user))
       rescue Exception => e
-        puts e.inspect  
+        puts e.inspect
       end
     }
   end

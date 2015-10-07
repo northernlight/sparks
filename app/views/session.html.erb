@@ -24,8 +24,8 @@
     };
 
     var self = null;
-
     var rtcSessions = {};
+
     (function() {
       // == Step 1: setup local video stream == //
       navigator.getUserMedia({audio: false, video: true}, function(stream) {
@@ -109,6 +109,7 @@
                 var msgICE = JSON.stringify({
                   'type': 'MsgICE',
                   'from': self.id,
+                  'to': msg.from,
                   'candidate': event.candidate.toJSON()
                 });
                 socket.send(msgICE);
