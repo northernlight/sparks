@@ -27,7 +27,7 @@ class Session
   end
 
   def on_leave(user)
-    @users.delete!(user)
+    @users.delete_if do |peer| peer.to? user.id end
     @users.each {|peer|
       begin
         peer.send_message(MsgLeave.new(user))
