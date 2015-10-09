@@ -6,7 +6,6 @@ class MsgAnswer < Msg
   attr_accessor :from, :to, :answer
 
   def fields
-    # FIXME: see MsgOffer.rb
     ['@from', '@to', '@answer']
   end
 end

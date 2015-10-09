@@ -2,7 +2,7 @@
   <link rel="import" type="css" href="peer-list.css">
   <template>
     <template is="dom-repeat" items="{{peers}}">
-      <contact-card starred="{{item.starred}}">
+      <contact-card starred="{{!!item.starred}}">
         <img src="{{item.img}}">
         <span>{{item.name}}</span>
       </contact-card>

@@ -57,8 +57,8 @@ var rtcSessions = {};
           rtcConnection.onicecandidate = function(event) {
             var msgICE = JSON.stringify({
               'type': 'MsgICE',
-              'from': self.id,
-              'to': msg.user.id,
+              'from': self,
+              'to': msg.user,
               'candidate': event.candidate.toJSON()
             });
             socket.send(msgICE);
@@ -67,8 +67,8 @@ var rtcSessions = {};
           rtcConnection.createOffer(function(offer) {
             var msgOffer = JSON.stringify({
               'type': 'MsgOffer',
-              'from': self.id,
-              'to': msg.user.id,
+              'from': self,
+              'to': msg.user,
               'offer': offer.toJSON()
             });
             socket.send(msgOffer);
@@ -91,7 +91,7 @@ var rtcSessions = {};
           rtcConnection.onicecandidate = function(event) {
             var msgICE = JSON.stringify({
               'type': 'MsgICE',
-              'from': self.id,
+              'from': self,
               'to': msg.from,
               'candidate': event.candidate.toJSON()
             });
@@ -102,26 +102,26 @@ var rtcSessions = {};
           rtcConnection.createAnswer(function(answer) {
             var msgAnswer = JSON.stringify({
               'type': 'MsgAnswer',
-              'from': self.id,
+              'from': self,
               'to': msg.from,
               'answer': answer.toJSON()
             });
             socket.send(msgAnswer);
           });
-          rtcSessions[msg.from] = rtcConnection;
+          rtcSessions[msg.from.id] = rtcConnection;
           break;
         case 'MsgAnswer':
-          if (msg.to != self.id) {
+          if (msg.to.id != self.id) {
             errorHandler("socket.onMessage")("received foreign MsgAnswer (this should never happen)");
           } else {
-            rtcSessions[msg.from].receiveAnswer(msg.answer);
+            rtcSessions[msg.from.id].receiveAnswer(msg.answer);
           }
           break;
         case 'MsgICE':
-          if (msg.to != self.id) {
+          if (msg.to.id != self.id) {
             errorHandler("socket.onMessage")("received foreign MsgICE (this should never happen)");
           } else {
-            rtcSessions[msg.from].addIceCandidate(msg.candidate);
+            rtcSessions[msg.from.id].addIceCandidate(msg.candidate);
           }
           break;
         default:
