@@ -20,7 +20,30 @@ var app = null;
       case 'MsgAnswer': // CAUTION: FALLTROUGH
       case 'MsgOffer':
         var identities = [
-          {name: "Mango", img: "/images/fruit-icons/5.png", starred:false}
+          {name: "Hazelnut", img: "/images/fruit-icons/1.png", starred:false},
+          {name: "Mango", img: "/images/fruit-icons/2.png", starred:false},
+          {name: "TheFuckIsThis", img: "/images/fruit-icons/3.png", starred:false},
+          {name: "Cantaloupe", img: "/images/fruit-icons/4.png", starred:false},
+          {name: "White Grape", img: "/images/fruit-icons/5.png", starred:false},
+          {name: "Coconut", img: "/images/fruit-icons/6.png", starred:false},
+          {name: "Blackberry", img: "/images/fruit-icons/7.png", starred:false},
+          {name: "Banana", img: "/images/fruit-icons/8.png", starred:false},
+          {name: "Papaya", img: "/images/fruit-icons/9.png", starred:false},
+          {name: "Apricot", img: "/images/fruit-icons/10.png", starred:false},
+          {name: "Water Melon", img: "/images/fruit-icons/11.png", starred:false},
+          {name: "Yellow Pear", img: "/images/fruit-icons/12.png", starred:false},
+          {name: "Plum", img: "/images/fruit-icons/13.png", starred:false},
+          {name: "Red Apple", img: "/images/fruit-icons/14.png", starred:false},
+          {name: "Cherry", img: "/images/fruit-icons/15.png", starred:false},
+          {name: "TheFuckIsThat", img: "/images/fruit-icons/16.png", starred:false},
+          {name: "Peach", img: "/images/fruit-icons/17.png", starred:false},
+          {name: "Green Pear", img: "/images/fruit-icons/18.png", starred:false},
+          {name: "Blue Grape", img: "/images/fruit-icons/19.png", starred:false},
+          {name: "Pomegranate", img: "/images/fruit-icons/20.png", starred:false},
+          {name: "Nectarine", img: "/images/fruit-icons/21.png", starred:false},
+          {name: "Yellow Apple", img: "/images/fruit-icons/22.png", starred:false},
+          {name: "Pineapple", img: "/images/fruit-icons/23.png", starred:false},
+          {name: "Strawberry", img: "/images/fruit-icons/24.png", starred:false}
         ];
         var identity = null;
         do {
