@@ -1,0 +1,30 @@
+<dom-module id="peer-list">
+  <link rel="import" type="css" href="peer-list.css">
+  <template>
+    <template is="dom-repeat" items="{{peers}}">
+      <contact-card starred="{{item.starred}}">
+        <img src="{{item.img}}">
+        <span>{{item.name}}</span>
+      </contact-card>
+    </template>
+  </template>
+  <script>
+    Polymer({
+      is: 'peer-list',
+      properties: {
+        peers: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        }
+      },
+      addPeer: function(user) {
+        this.push('peers', user);
+      },
+      hasPeer: function(peer) {
+        return (this.peers.indexOf(peer) != -1);
+      }
+    });
+  </script>
+</dom-module>

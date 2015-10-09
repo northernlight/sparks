@@ -1,0 +1,22 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="contact-card">
+  <link rel="import" type="css" href="contact-card.css">
+  <template>
+    <content></content>
+    <iron-icon icon="star" hidden$="{{!starred}}"></iron-icon>
+  </template>
+  <script>
+    Polymer({
+      is: 'contact-card',
+      properties: {
+        starred: {
+          type: Boolean,
+          value: false
+        }
+      }
+    });
+  </script>
+</dom-module>

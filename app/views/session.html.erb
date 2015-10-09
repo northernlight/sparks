@@ -1,8 +1,27 @@
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Session running</title>
+
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="/styles/main.css">
+  <!-- endbuild-->
+
+  <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+  <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <!-- endbuild -->
+
+  <!-- build:js bower_components/webrtc-adapter/adapter.min.js -->
   <script src="/bower_components/webrtc-adapter/adapter.js"></script>
+  <!-- endbuild -->
+
+  <!-- will be replaced with elements/elements.vulcanized.html -->
+  <link rel="import" href="/elements/elements.html">
+  <!-- endreplace-->
+
+<!-- For shared styles, shared-styles.html import in elements.html -->
+<style is="custom-style" include="shared-styles"></style>
   <script src="/js/RTCAbstraction.js"></script>
   <style>
     video {
@@ -11,142 +30,67 @@
     }
   </style>
 </head>
-<body>
-  <div id="videos">
-    <video id="localVideo" autoplay>Video stream not available.</video>
-  </div>
-  <script>
-    // == Step 0: define error handler and global variables == //
-    errorHandler = function(trace) {
-      return function(msg) {
-        throw new Error("error in " + trace + ": " + msg);
-      }
-    };
+<body unresolved class="fullbleed layout vertical">
+  <template is="dom-bind" id="app">
+    <paper-drawer-panel force-narrow id="paperDrawerPanel">
+      <!-- Drawer Scroll Header Panel -->
+      <paper-scroll-header-panel drawer fixed>
 
-    var self = null;
-    var rtcSessions = {};
+        <!-- Drawer Toolbar -->
+        <paper-toolbar id="drawerToolbar">
+          <span class="paper-font-title">Menu</span>
+        </paper-toolbar>
 
-    (function() {
-      // == Step 1: setup local video stream == //
-      navigator.getUserMedia({audio: false, video: true}, function(stream) {
-        var video = document.getElementById("localVideo");
-        video.src = window.URL.createObjectURL(stream);
+        <!-- Drawer Content -->
+        <paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
+          <contact-card starred>
+            <img src="/images/fruit-icons/6.png" alt="Eric's photo">
+            <span>Chuck Norris</span>
+          </contact-card>
+          <peer-list id="peerList"></peer-list>
+        </paper-menu>
+      </paper-scroll-header-panel>
 
-        video.onloadedmetadata = function(e) {
-          video.play();
-        };
+      <!-- Main Area -->
+      <paper-scroll-header-panel main condenses keep-condensed-header>
 
-        // == Step 2: establish 2-way signaling channel to server == //
-        var socket = new WebSocket("ws://" + window.location.host + "/session/<%= @id %>");
-        socket.onopen = function (event) {
-          console.log("websocket established");
-        };
-        socket.onmessage = function (event) {
-          console.log(event.data);
-          var msg = JSON.parse(event.data);
-          switch(msg.type) {
-            case 'MsgPing':
-              // pong
-              break;
-            case 'MsgNewUser':
-              self = msg.user;
-              // currently we send out the offer regardless of user count
-              if(msg.users_count > 1) {
-                // send offer - not.
-              } else {
-                // first one!
-                // alone :( wait for offer
-              }
-              break;
-            case 'MsgJoin':
-              var rtcConnection = new RTCAbstraction();
-              rtcConnection.onaddstream = function(obj) {
-                console.log("onaddstream()");
-                var vid = document.createElement("video");
-                vid.setAttribute("id", msg.user.id);
-                vid.setAttribute("autoplay", true);
-                document.getElementById("videos").appendChild(vid);
-                vid.src = URL.createObjectURL(obj.stream);
-                vid.onloadedmetadata = function(e) {
-                  vid.play();
-                };
-              };
-              rtcConnection.onicecandidate = function(event) {
-                var msgICE = JSON.stringify({
-                  'type': 'MsgICE',
-                  'from': self.id,
-                  'to': msg.user.id,
-                  'candidate': event.candidate.toJSON()
-                });
-                socket.send(msgICE);
-              };
-              rtcConnection.addStream(stream);
-              rtcConnection.createOffer(function(offer) {
-                var msgOffer = JSON.stringify({
-                  'type': 'MsgOffer',
-                  'from': self.id,
-                  'to': msg.user.id,
-                  'offer': offer.toJSON()
-                });
-                socket.send(msgOffer);
-              });
-              rtcSessions[msg.user.id] = rtcConnection;
-              break;
-            case 'MsgOffer':
-              var rtcConnection = new RTCAbstraction();
-              rtcConnection.onaddstream = function(obj) {
-                console.log("onaddstream()");
-                var vid = document.createElement("video");
-                vid.setAttribute("id", msg.from);
-                vid.setAttribute("autoplay", true);
-                document.getElementById("videos").appendChild(vid);
-                vid.src = URL.createObjectURL(obj.stream);
-                vid.onloadedmetadata = function(e) {
-                  vid.play();
-                };
-              };
-              rtcConnection.onicecandidate = function(event) {
-                var msgICE = JSON.stringify({
-                  'type': 'MsgICE',
-                  'from': self.id,
-                  'to': msg.from,
-                  'candidate': event.candidate.toJSON()
-                });
-                socket.send(msgICE);
-              };
-              rtcConnection.addStream(stream);
-              rtcConnection.receiveOffer(msg.offer);
-              rtcConnection.createAnswer(function(answer) {
-                var msgAnswer = JSON.stringify({
-                  'type': 'MsgAnswer',
-                  'from': self.id,
-                  'to': msg.from,
-                  'answer': answer.toJSON()
-                });
-                socket.send(msgAnswer);
-              });
-              rtcSessions[msg.from] = rtcConnection;
-              break;
-            case 'MsgAnswer':
-              if (msg.to != self.id) {
-                errorHandler("socket.onMessage")("received foreign MsgAnswer (this should never happen)");
-              } else {
-                rtcSessions[msg.from].receiveAnswer(msg.answer);
-              }
-              break;
-            case 'MsgICE':
-              if (msg.to != self.id) {
-                errorHandler("socket.onMessage")("received foreign MsgICE (this should never happen)");
-              } else {
-                rtcSessions[msg.from].addIceCandidate(msg.candidate);
-              }
-              break;
-            default:
-              errorHandler("socket.onMessage")("no such message type: " + msg.type);
-              break;
-          }
-        };
-      }, errorHandler("getUserMedia"));
-    })();
-  </script>
+        <!-- Main Toolbar -->
+        <paper-toolbar id="mainToolbar" class="tall">
+          <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+          <span class="flex"></span>
+
+          <!-- Toolbar icons -->
+          <paper-icon-button icon="refresh"></paper-icon-button>
+          <paper-icon-button icon="search"></paper-icon-button>
+
+          <!-- Application name -->
+          <div class="middle middle-container center horizontal layout">
+            <div class="app-name">Sparks Beta</div>
+          </div>
+
+          <!-- Application sub title -->
+          <div class="bottom bottom-container center horizontal layout">
+            <div class="bottom-title paper-font-subhead">Add your friends with this url: blabla</div>
+          </div>
+
+        </paper-toolbar>
+
+        <!-- Main Content -->
+        <div class="content">
+          <paper-material elevation="1">
+            <div id="videos">
+              <video id="localVideo" autoplay>Video stream not available.</video>
+            </div>
+          </paper-material>
+        </div>
+      </paper-scroll-header-panel>
+    </paper-drawer-panel>
+  </template>
+  <!-- build:js scripts/app.js -->
+  <script src="/js/app.js"></script>
+  <!-- endbuild-->
+
+  <!-- build:js scripts/layout.js -->
+  <script src="/js/layout.js"></script>
+  <!-- endbuild-->
 </body>
