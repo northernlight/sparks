@@ -24,11 +24,14 @@ var app = null;
     switch(msg.type) {
       case 'MsgNewUser':
         break;
-      case 'MsgAnswer': // CAUTION: FALLTROUGH
-      case 'MsgOffer':
-        app.$.peerList.set("peers", _.values(app.users));
+      case 'MsgJoin':
+        var toast = document.querySelector('#toast');
+        toast.set('text', "User " + msg.user.name + " joined");
+        toast.show();
         break;
-      case 'MsgUpdate':
+      case 'MsgAnswer': // CAUTION: FALLTROUGH
+      case 'MsgUpdate': // CAUTION: FALLTROUGH
+      case 'MsgOffer':
         app.$.peerList.set("peers", _.values(app.users));
         break;
     }
