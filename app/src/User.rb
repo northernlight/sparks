@@ -90,6 +90,7 @@ class User
       if(msg.respond_to? :to)
         msg.to = to_h
       end
+      puts "> send " + msg.to_json
       @socket.write msg.to_json
     rescue Exception => e
       puts e.inspect
@@ -113,6 +114,13 @@ class User
       msg = MsgICE.new.from_json!(msg)
       msg.from = Actor.current
       @session.beat (lambda do |user| user.send_message(msg) if user.to? msg.to["id"] end)
+    when 'MsgNewUser'
+      msg = MsgNewUser.new(self).from_json!(msg)
+      puts msg.inspect
+      @name = msg.user["name"]
+      @img = msg.user["img"]
+      msgJoin = MsgJoin.new(self)
+      @session.beat (lambda do |user| user.send_message(msgJoin) unless user.to? msgJoin.user.id end)
     else
       puts "Unkown message type #{JSON.parse(msg)['type']}"
     end

@@ -16,13 +16,19 @@
   <script src="/bower_components/webrtc-adapter/adapter.js"></script>
   <!-- endbuild -->
 
+  <!-- build:js js/RTCAbstraction.min.js -->
+  <script src="/js/RTCAbstraction.js"></script>
+  <!-- endbuild -->
+
   <!-- will be replaced with elements/elements.vulcanized.html -->
   <link rel="import" href="/elements/elements.html">
   <!-- endreplace-->
 
-<!-- For shared styles, shared-styles.html import in elements.html -->
-<style is="custom-style" include="shared-styles"></style>
-  <script src="/js/RTCAbstraction.js"></script>
+  <!-- For shared styles, shared-styles.html import in elements.html -->
+  <style is="custom-style" include="shared-styles">
+  </style>
+
+  <!-- HTML style -->
   <style>
     video {
       /* flip video horizontally */
@@ -34,19 +40,14 @@
   <template is="dom-bind" id="app">
     <paper-drawer-panel force-narrow id="paperDrawerPanel">
       <!-- Drawer Scroll Header Panel -->
-      <paper-scroll-header-panel drawer fixed>
+      <paper-scroll-header-panel id="drawer" drawer fixed>
 
         <!-- Drawer Toolbar -->
-        <paper-toolbar id="drawerToolbar">
-          <span class="paper-font-title">Menu</span>
-        </paper-toolbar>
+        <profile-header id="profileHeader" user="{{thisUser}}">
+        </profile-header>
 
         <!-- Drawer Content -->
-        <paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
-          <contact-card starred>
-            <img src="/images/fruit-icons/6.png" alt="Eric's photo">
-            <span>Chuck Norris</span>
-          </contact-card>
+        <paper-menu class="list">
           <peer-list id="peerList"></peer-list>
         </paper-menu>
       </paper-scroll-header-panel>
@@ -86,11 +87,12 @@
       </paper-scroll-header-panel>
     </paper-drawer-panel>
   </template>
-  <!-- build:js scripts/app.js -->
-  <script src="/js/app.js"></script>
+
+  <!-- build:js scripts/layout.min.js -->
+  <script src="/js/layout.js"></script>
   <!-- endbuild-->
 
-  <!-- build:js scripts/layout.js -->
-  <script src="/js/layout.js"></script>
+  <!-- build:js scripts/app.min.js -->
+  <script src="/js/app.js"></script>
   <!-- endbuild-->
 </body>

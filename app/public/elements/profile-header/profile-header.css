@@ -1,0 +1,8 @@
+.toolbar {
+  --paper-toolbar-background: url(/images/abstract.jpg) top left no-repeat;
+}
+
+:host ::content paper-input {
+  --paper-input-container-color: var(--text-primary-color);
+  --paper-input-container-input-color: var(--text-primary-color);
+}

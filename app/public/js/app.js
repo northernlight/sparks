@@ -1,3 +1,4 @@
+(function(document) {
 // == Step 0: define error handler and global variables == //
 errorHandler = function(trace) {
   return function(msg) {
@@ -5,10 +6,10 @@ errorHandler = function(trace) {
   }
 };
 
-var self = null;
-var rtcSessions = {};
+app.thisUser = null;
+rtcSessions = {};
 
-(function() {
+run = function() {
   'use strict';
   // == Step 1: setup local video stream == //
   navigator.getUserMedia({audio: false, video: true}, function(stream) {
@@ -23,6 +24,9 @@ var rtcSessions = {};
     var socket = new WebSocket("ws://" + window.location.host + window.location.pathname);
     socket.onopen = function (event) {
       console.log("websocket established");
+      app.sendMessage = function(msg) {
+        socket.send(msg);
+      }.bind(socket);
     };
     socket.onmessage = function (event) {
       console.log(event.data);
@@ -32,7 +36,6 @@ var rtcSessions = {};
           // pong
           break;
         case 'MsgNewUser':
-          self = msg.user;
           // currently we send out the offer regardless of user count
           if(msg.users_count > 1) {
             // send offer - not.
@@ -42,38 +45,47 @@ var rtcSessions = {};
           }
           break;
         case 'MsgJoin':
-          var rtcConnection = new RTCAbstraction();
-          rtcConnection.onaddstream = function(obj) {
-            console.log("onaddstream()");
-            var vid = document.createElement("video");
-            vid.setAttribute("id", msg.user.id);
-            vid.setAttribute("autoplay", true);
-            document.getElementById("videos").appendChild(vid);
-            vid.src = URL.createObjectURL(obj.stream);
-            vid.onloadedmetadata = function(e) {
-              vid.play();
-            };
-          };
-          rtcConnection.onicecandidate = function(event) {
-            var msgICE = JSON.stringify({
-              'type': 'MsgICE',
-              'from': self,
-              'to': msg.user,
-              'candidate': event.candidate.toJSON()
-            });
-            socket.send(msgICE);
-          };
-          rtcConnection.addStream(stream);
-          rtcConnection.createOffer(function(offer) {
-            var msgOffer = JSON.stringify({
-              'type': 'MsgOffer',
-              'from': self,
-              'to': msg.user,
-              'offer': offer.toJSON()
-            });
-            socket.send(msgOffer);
+          var index = app.$.peerList.peers.findIndex(function(el, index) {
+            if(el.id == msg.user.id)
+              return index;
           });
-          rtcSessions[msg.user.id] = rtcConnection;
+          if(index != -1) {
+            console.log("user already registered:" + msg.user);
+            app.$.peerList.peers[index] = msg.user;
+          } else {
+            var rtcConnection = new RTCAbstraction();
+            rtcConnection.onaddstream = function(obj) {
+              console.log("onaddstream()");
+              var vid = document.createElement("video");
+              vid.setAttribute("id", msg.user.id);
+              vid.setAttribute("autoplay", true);
+              document.getElementById("videos").appendChild(vid);
+              vid.src = URL.createObjectURL(obj.stream);
+              vid.onloadedmetadata = function(e) {
+                vid.play();
+              };
+            };
+            rtcConnection.onicecandidate = function(event) {
+              var msgICE = JSON.stringify({
+                'type': 'MsgICE',
+                'from': app.thisUser,
+                'to': msg.user,
+                'candidate': event.candidate.toJSON()
+              });
+              socket.send(msgICE);
+            };
+            rtcConnection.addStream(stream);
+            rtcConnection.createOffer(function(offer) {
+              var msgOffer = JSON.stringify({
+                'type': 'MsgOffer',
+                'from': app.thisUser,
+                'to': msg.user,
+                'offer': offer.toJSON()
+              });
+              socket.send(msgOffer);
+            });
+            rtcSessions[msg.user.id] = rtcConnection;
+          }
           break;
         case 'MsgOffer':
           var rtcConnection = new RTCAbstraction();
@@ -91,7 +103,7 @@ var rtcSessions = {};
           rtcConnection.onicecandidate = function(event) {
             var msgICE = JSON.stringify({
               'type': 'MsgICE',
-              'from': self,
+              'from': app.thisUser,
               'to': msg.from,
               'candidate': event.candidate.toJSON()
             });
@@ -102,7 +114,7 @@ var rtcSessions = {};
           rtcConnection.createAnswer(function(answer) {
             var msgAnswer = JSON.stringify({
               'type': 'MsgAnswer',
-              'from': self,
+              'from': app.thisUser,
               'to': msg.from,
               'answer': answer.toJSON()
             });
@@ -111,14 +123,14 @@ var rtcSessions = {};
           rtcSessions[msg.from.id] = rtcConnection;
           break;
         case 'MsgAnswer':
-          if (msg.to.id != self.id) {
+          if (msg.to.id != app.thisUser.id) {
             errorHandler("socket.onMessage")("received foreign MsgAnswer (this should never happen)");
           } else {
             rtcSessions[msg.from.id].receiveAnswer(msg.answer);
           }
           break;
         case 'MsgICE':
-          if (msg.to.id != self.id) {
+          if (msg.to.id != app.thisUser.id) {
             errorHandler("socket.onMessage")("received foreign MsgICE (this should never happen)");
           } else {
             rtcSessions[msg.from.id].addIceCandidate(msg.candidate);
@@ -131,4 +143,5 @@ var rtcSessions = {};
       app.onMessage(msg);
     };
   }, errorHandler("getUserMedia"));
-})();
+};
+})(document);

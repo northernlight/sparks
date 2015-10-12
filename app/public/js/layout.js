@@ -5,11 +5,11 @@ var app = null;
 
   app = document.querySelector('#app');
 
-
   // Listen for template bound event to know when bindings
   // have resolved and content has been stamped to the page
   app.addEventListener('dom-change', function() {
     console.log('Our app is ready to rock!');
+    run();
   });
 
   /**
@@ -17,6 +17,9 @@ var app = null;
     */
   app.onMessage = function(msg) {
     switch(msg.type) {
+      case 'MsgNewUser':
+        app.set("thisUser", msg.user);
+        break;
       case 'MsgAnswer': // CAUTION: FALLTROUGH
       case 'MsgOffer':
         this.$.peerList.addPeer(msg.from);
@@ -49,14 +52,6 @@ var app = null;
     // Scale middleContainer appName
     Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
   });
-
-  // Close drawer after menu item is selected if drawerPanel is narrow
-  app.onDataRouteClick = function() {
-    var drawerPanel = document.querySelector('#paperDrawerPanel');
-    if (drawerPanel.narrow) {
-      drawerPanel.closeDrawer();
-    }
-  };
 
   // Scroll page to top and expand header
   app.scrollPageToTop = function() {
