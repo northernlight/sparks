@@ -3,8 +3,10 @@
   <template>
     <paper-toolbar class="toolbar tall">
       <contact-card class="bottom">
-        <img src="{{user.img}}">
-        <paper-input value="{{user.name::change}}" on-change="userChanged"></paper-input>
+        <template is="dom-if" if="{{user.img}}">
+          <img src="{{user.img}}" alt="Avatar">
+        </template>
+        <paper-input value="{{user.name::change}}"></paper-input>
       </contact-card>
     </paper-toolbar>
   </template>
@@ -14,27 +16,8 @@
       properties: {
         user: {
           type: Object,
-          notify: true,
-          value: function() {
-            return {
-              name: "anonymous",
-              img: "/images/fruit-icons/1.png"
-            };
-          }
+          notify: true
         }
       },
-      observers: [
-        'userChanged(user)'
-      ],
-      userChanged: function(e) {
-        if(e && e.srcElement) {
-          this.user.name = e.srcElement.value;
-          var msg = JSON.stringify({
-            type: 'MsgNewUser',
-            user: this.user
-          });
-          app.sendMessage(msg);
-        }
-      }
     });
   </script></dom-module>

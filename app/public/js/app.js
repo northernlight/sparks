@@ -6,7 +6,6 @@ errorHandler = function(trace) {
   }
 };
 
-app.thisUser = null;
 rtcSessions = {};
 
 run = function() {
@@ -36,6 +35,7 @@ run = function() {
           // pong
           break;
         case 'MsgNewUser':
+          app.set("me", msg.user);
           // currently we send out the offer regardless of user count
           if(msg.users_count > 1) {
             // send offer - not.
@@ -45,47 +45,38 @@ run = function() {
           }
           break;
         case 'MsgJoin':
-          var index = app.$.peerList.peers.findIndex(function(el, index) {
-            if(el.id == msg.user.id)
-              return index;
-          });
-          if(index != -1) {
-            console.log("user already registered:" + msg.user);
-            app.$.peerList.peers[index] = msg.user;
-          } else {
-            var rtcConnection = new RTCAbstraction();
-            rtcConnection.onaddstream = function(obj) {
-              console.log("onaddstream()");
-              var vid = document.createElement("video");
-              vid.setAttribute("id", msg.user.id);
-              vid.setAttribute("autoplay", true);
-              document.getElementById("videos").appendChild(vid);
-              vid.src = URL.createObjectURL(obj.stream);
-              vid.onloadedmetadata = function(e) {
-                vid.play();
-              };
+          var rtcConnection = new RTCAbstraction();
+          rtcConnection.onaddstream = function(obj) {
+            console.log("onaddstream()");
+            var vid = document.createElement("video");
+            vid.setAttribute("id", msg.user.id);
+            vid.setAttribute("autoplay", true);
+            document.getElementById("videos").appendChild(vid);
+            vid.src = URL.createObjectURL(obj.stream);
+            vid.onloadedmetadata = function(e) {
+              vid.play();
             };
-            rtcConnection.onicecandidate = function(event) {
-              var msgICE = JSON.stringify({
-                'type': 'MsgICE',
-                'from': app.thisUser,
-                'to': msg.user,
-                'candidate': event.candidate.toJSON()
-              });
-              socket.send(msgICE);
-            };
-            rtcConnection.addStream(stream);
-            rtcConnection.createOffer(function(offer) {
-              var msgOffer = JSON.stringify({
-                'type': 'MsgOffer',
-                'from': app.thisUser,
-                'to': msg.user,
-                'offer': offer.toJSON()
-              });
-              socket.send(msgOffer);
+          };
+          rtcConnection.onicecandidate = function(event) {
+            var msgICE = JSON.stringify({
+              'type': 'MsgICE',
+              'from': app.me,
+              'to': msg.user,
+              'candidate': event.candidate.toJSON()
             });
-            rtcSessions[msg.user.id] = rtcConnection;
-          }
+            socket.send(msgICE);
+          };
+          rtcConnection.addStream(stream);
+          rtcConnection.createOffer(function(offer) {
+            var msgOffer = JSON.stringify({
+              'type': 'MsgOffer',
+              'from': app.me,
+              'to': msg.user,
+              'offer': offer.toJSON()
+            });
+            socket.send(msgOffer);
+          });
+          rtcSessions[msg.user.id] = rtcConnection;
           break;
         case 'MsgOffer':
           var rtcConnection = new RTCAbstraction();
@@ -103,7 +94,7 @@ run = function() {
           rtcConnection.onicecandidate = function(event) {
             var msgICE = JSON.stringify({
               'type': 'MsgICE',
-              'from': app.thisUser,
+              'from': app.me,
               'to': msg.from,
               'candidate': event.candidate.toJSON()
             });
@@ -114,26 +105,42 @@ run = function() {
           rtcConnection.createAnswer(function(answer) {
             var msgAnswer = JSON.stringify({
               'type': 'MsgAnswer',
-              'from': app.thisUser,
+              'from': app.me,
               'to': msg.from,
               'answer': answer.toJSON()
             });
             socket.send(msgAnswer);
           });
+          app.users[msg.from.id] = msg.from;
           rtcSessions[msg.from.id] = rtcConnection;
           break;
         case 'MsgAnswer':
-          if (msg.to.id != app.thisUser.id) {
+          if (msg.to.id != app.me.id) {
             errorHandler("socket.onMessage")("received foreign MsgAnswer (this should never happen)");
           } else {
+            app.users[msg.from.id] = msg.from;
             rtcSessions[msg.from.id].receiveAnswer(msg.answer);
           }
           break;
         case 'MsgICE':
-          if (msg.to.id != app.thisUser.id) {
+          if (msg.to.id != app.me.id) {
             errorHandler("socket.onMessage")("received foreign MsgICE (this should never happen)");
           } else {
             rtcSessions[msg.from.id].addIceCandidate(msg.candidate);
+          }
+          break;
+        case 'MsgUpdate':
+          switch(msg.object.type) {
+            case 'User':
+              if(app.me.id == msg.object.id) {
+                app.set("me", msg.object);
+              } else {
+                app.users[msg.object.id] = msg.object;
+              }
+              break;
+            default:
+              errorHandler("socket.onMessage")("no such object type: " + msg.object.type);
+              break;
           }
           break;
         default:

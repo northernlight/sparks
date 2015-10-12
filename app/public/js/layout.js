@@ -4,6 +4,11 @@ var app = null;
   'use strict';
 
   app = document.querySelector('#app');
+  app.users = {};
+  app.me = {
+    'name': 'anonymous',
+    'img': '/images/fruit-icons/1.png'
+  };
 
   // Listen for template bound event to know when bindings
   // have resolved and content has been stamped to the page
@@ -18,14 +23,25 @@ var app = null;
   app.onMessage = function(msg) {
     switch(msg.type) {
       case 'MsgNewUser':
-        app.set("thisUser", msg.user);
         break;
       case 'MsgAnswer': // CAUTION: FALLTROUGH
       case 'MsgOffer':
-        this.$.peerList.addPeer(msg.from);
+        app.$.peerList.set("peers", _.values(app.users));
+        break;
+      case 'MsgUpdate':
+        app.$.peerList.set("peers", _.values(app.users));
         break;
     }
   }
+
+  app.addEventListener('me-changed', function(e) {
+    var msg = JSON.stringify({
+      type: "MsgUpdate",
+      object: app.me
+    });
+    this.sendMessage(msg);
+  });
+
 
   // See https://github.com/Polymer/polymer/issues/1381
   window.addEventListener('WebComponentsReady', function() {
