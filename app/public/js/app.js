@@ -143,6 +143,12 @@ run = function() {
               break;
           }
           break;
+        case 'MsgLeave':
+          delete app.users[msg.user.id];
+          delete rtcSessions[msg.user.id];
+          var video = document.getElementById(msg.user.id);
+          video.parentNode.removeChild(video);
+          break;
         default:
           errorHandler("socket.onMessage")("no such message type: " + msg.type);
           break;

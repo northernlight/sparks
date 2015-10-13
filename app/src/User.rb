@@ -115,7 +115,6 @@ class User
       @session.beat (lambda do |user| user.send_message(msg) if user.to? msg.to["id"] end)
     when 'MsgUpdate'
       msg = MsgUpdate.new(nil).from_json!(msg)
-      msg.from = Actor.current
       @name = msg.object["name"]
       @img = msg.object["img"]
       msg = MsgUpdate.new(self)
@@ -144,6 +143,6 @@ class User
   end
 
   def on_close
-    @session.on_leave(self)
+    @session.on_leave(Actor.current)
   end
 end

@@ -31,6 +31,7 @@ var app = null;
         break;
       case 'MsgAnswer': // CAUTION: FALLTROUGH
       case 'MsgUpdate': // CAUTION: FALLTROUGH
+      case 'MsgLeave': // CAUTION: FALLTROUGH
       case 'MsgOffer':
         app.$.peerList.set("peers", _.values(app.users));
         break;
