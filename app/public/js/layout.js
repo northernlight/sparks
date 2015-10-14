@@ -28,6 +28,11 @@ var app = null;
     */
   app.onMessage = function(msg) {
     switch(msg.type) {
+      case 'MsgChat':
+        var toast = document.querySelector('#toast');
+        toast.set('text', "<" + msg.from.name + "> " + msg.message);
+        toast.show();
+        break;
       case 'MsgNewUser':
         break;
       case 'MsgJoin':
@@ -76,6 +81,15 @@ var app = null;
     app.msnry.appended(vid);
     app.msnry.layout();
   }
+
+  app.sendMyMessage = function(e) {
+    if(!app.input) return; // if the input field is empty, do nothing.
+    var msg = JSON.stringify({
+      type: 'MsgChat',
+      message: app.input
+    });
+    _.forEach(_.values(app.users), function(user) { user.dataChannel.send(msg); });
+  };
 
   app.addEventListener('me-changed', function(e) {
     var msg = JSON.stringify({

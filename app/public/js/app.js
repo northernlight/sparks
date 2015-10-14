@@ -11,6 +11,13 @@ function User(user, callback) {
 
   // instantiate PeerConnection
   this.connection = new PeerConnection();
+  this.dataChannel = this.connection.createDataChannel("data");
+  this.dataChannel.onmessage = function(msg) {
+    console.log("p2p: " + msg);
+    var msg = JSON.parse(msg.data);
+    msg.from = this.getInfo();
+    app.onMessage(msg);
+  }.bind(this);
   this.connection.on('ice', function (candidate) {
     var msg = JSON.stringify({
       'type': 'MsgICE',
@@ -23,14 +30,10 @@ function User(user, callback) {
   this.connection.on('offer', function (err, offer) {
     // STUB
   });
-  this.connection.on('answer', function(err, offer) {
-    if(!err) {
-
-    } else {
-      errorHandler("User.on('answer')", 'could not accept answer');
-    }
-  });
   this.connection.on('addStream', callback.bind(this));
+  this.connection.on('addChannel', function(channel) {
+    this.dataChannel = channel;
+  }.bind(this));
 }
 
 User.prototype.connect = function() {
@@ -80,8 +83,9 @@ User.prototype.handleAnswer = function(answer) {
   this.connection.handleAnswer(answer, function (err) {
     if (err) {
       errorHandler("User.handleAnswer", 'could not accept answer');
+    } else {
     }
-  });
+  }.bind(this));
 }
 
 User.prototype.handleIce = function(candidate) {

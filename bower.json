@@ -20,6 +20,7 @@
     "iron-pages": "PolymerElements/iron-pages#~1.0.3",
     "paper-input": "PolymerElements/paper-input#~1.0.15",
     "masonry": "~3.3.2",
-    "requirejs": "~2.1.20"
+    "requirejs": "~2.1.20",
+    "paper-fab": "PolymerElements/paper-fab#~1.0.5"
   }
 }

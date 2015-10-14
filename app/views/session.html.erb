@@ -84,6 +84,10 @@
               <video id="localVideo" class="video x2" autoplay>Video stream not available.</video>
             </div>
           </paper-material>
+          <div class="send-message horizontal layout">
+              <paper-input class="flex" label="Type message..." id="input" value="{{input}}"></paper-input>
+              <paper-fab icon="send" id="sendButton" on-tap="sendMyMessage"></paper-fab>
+          </div>
         </div>
       </paper-scroll-header-panel>
     </paper-drawer-panel>
