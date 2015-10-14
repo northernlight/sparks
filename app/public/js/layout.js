@@ -33,7 +33,9 @@ var app = null;
       case 'MsgUpdate': // CAUTION: FALLTROUGH
       case 'MsgLeave': // CAUTION: FALLTROUGH
       case 'MsgOffer':
-        app.$.peerList.set("peers", _.values(app.users));
+        app.$.peerList.set("peers", _.map(_.values(app.users), function(user) {
+          return user.getInfo();
+        }));
         break;
     }
   }
