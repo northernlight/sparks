@@ -12,3 +12,18 @@ body {
   font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #333;
 }
+
+video {
+  margin-bottom: 10px;
+
+  /* flip video horizontally */
+  transform: scale(-1,1);
+}
+
+.video, .spacer {
+  width: 30%;
+}
+
+.video.x2 {
+  width: 45%;
+}

@@ -122,18 +122,6 @@ run = function() {
       }.bind(socket);
     };
 
-    var acceptStream = function(event) {
-      var vid = document.createElement("video");
-      vid.setAttribute("id", this.id);
-      vid.setAttribute("autoplay", true);
-      vid.src = window.URL.createObjectURL(event.stream);
-      vid.innerHTML = "Video not available";
-      document.getElementById("videos").appendChild(vid);
-      vid.onloadedmetadata = function(e) {
-        video.play();
-      };
-    };
-
     socket.onmessage = function (event) {
       console.log(event.data);
       var msg = JSON.parse(event.data);
@@ -142,7 +130,7 @@ run = function() {
           app.set("me", msg.user);
           break;
         case 'MsgJoin':
-          var user = new User(msg.user, acceptStream);
+          var user = new User(msg.user, app.addStream);
           user.addStream(stream);
           app.users[user.id] = user;
           user.connect();
@@ -151,7 +139,7 @@ run = function() {
           if (msg.to.id != app.me.id) {
             errorHandler("socket.onMessage")("received foreign MsgOffer (this should never happen)");
           } else {
-            var user = new User(msg.from, acceptStream);
+            var user = new User(msg.from, app.addStream);
             user.addStream(stream);
             app.users[user.id] = user;
             user.handleOffer(msg.offer);

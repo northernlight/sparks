@@ -20,6 +20,10 @@
   <script src="/bower_components/webrtc-adapter/adapter.js"></script>
   <!-- endbuild -->
 
+  <!-- build:js js/masonry.pkgd.min.js -->
+  <script src="/js/masonry.pkgd.js"></script>
+  <!-- endbuild -->
+
   <!-- build:js js/rtcpeerconnection.bundle.min.js -->
   <script src="/js/rtcpeerconnection.bundle.js"></script>
   <!-- endbuild -->
@@ -30,14 +34,6 @@
 
   <!-- For shared styles, shared-styles.html import in elements.html -->
   <style is="custom-style" include="shared-styles">
-  </style>
-
-  <!-- HTML style -->
-  <style>
-    video {
-      /* flip video horizontally */
-      transform: scale(-1,1);
-    }
   </style>
 </head>
 <body unresolved class="fullbleed layout vertical">
@@ -84,7 +80,8 @@
         <div class="content">
           <paper-material elevation="1">
             <div id="videos">
-              <video id="localVideo" autoplay>Video stream not available.</video>
+              <div class="video spacer"></div>
+              <video id="localVideo" class="video x2" autoplay>Video stream not available.</video>
             </div>
           </paper-material>
         </div>

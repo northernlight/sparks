@@ -144,7 +144,6 @@ class User
   end
 
   def on_close
-    terminate
     @session.on_leave(self)
   end
 end

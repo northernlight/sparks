@@ -15,6 +15,12 @@ var app = null;
   app.addEventListener('dom-change', function() {
     console.log('Our app is ready to rock!');
     run();
+    app.msnry = new Masonry('#videos', {
+      // options
+      itemSelector: '.video',
+      columnWidth: '.spacer',
+      gutter: 10
+    });
   });
 
   /**
@@ -43,6 +49,32 @@ var app = null;
         }));
         break;
     }
+  }
+
+  app.addStream = function(event) {
+    var vid = document.createElement("video");
+    vid.setAttribute("id", this.id);
+    vid.setAttribute("autoplay", true);
+    vid.src = window.URL.createObjectURL(event.stream);
+    vid.innerHTML = "Video not available";
+    vid.classList.add('video');
+    document.getElementById("videos").appendChild(vid);
+    vid.onloadedmetadata = function(e) {
+      vid.play();
+    };
+
+    // magic layout
+    var videos = document.getElementsByClassName("video");
+    _.forEach(videos, function(video) {
+      if(((videos.length-1) % 2) == 0) {
+        video.classList.add("x2");
+      } else {
+        video.classList.remove("x2");
+      }
+    });
+
+    app.msnry.appended(vid);
+    app.msnry.layout();
   }
 
   app.addEventListener('me-changed', function(e) {
