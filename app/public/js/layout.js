@@ -29,6 +29,11 @@ var app = null;
         toast.set('text', "User " + msg.user.name + " joined");
         toast.show();
         break;
+      case 'MsgLeave':
+        var toast = document.querySelector('#toast');
+        toast.set('text', "User " + msg.user.name + " left");
+        toast.show();
+        // CAUTION: FALLTROUGH
       case 'MsgAnswer': // CAUTION: FALLTROUGH
       case 'MsgUpdate': // CAUTION: FALLTROUGH
       case 'MsgLeave': // CAUTION: FALLTROUGH
