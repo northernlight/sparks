@@ -81,6 +81,7 @@ class User
         puts e.backtrace
         on_close
         terminate
+        raise e
       end
     }
   end
@@ -143,6 +144,7 @@ class User
   end
 
   def on_close
-    @session.on_leave(Actor.current)
+    terminate
+    @session.on_leave(self)
   end
 end
