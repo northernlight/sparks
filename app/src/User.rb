@@ -144,6 +144,6 @@ class User
   end
 
   def on_close
-    @session.on_leave(self)
+    @session.on_leave(Actor.current)
   end
 end

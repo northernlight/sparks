@@ -23,6 +23,10 @@ var app = null;
     });
   });
 
+  app.onButtonLeaveClick = function() {
+    window.location.assign("/");
+  };
+
   /**
     *
     */
