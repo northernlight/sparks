@@ -73,17 +73,7 @@ class User
 
   def socket=(socket)
     @socket = socket
-    Celluloid.every(CYCLE_TIME) {
-      begin
-        on_message(@socket.read) # this seems to be blocking.
-      rescue Exception => e
-        puts e.inspect
-        puts e.backtrace
-        on_close
-        terminate
-        raise e
-      end
-    }
+    @socket.on_message {|msg| self.on_message(msg)}
   end
 
   def send_message(msg)
@@ -104,15 +94,15 @@ class User
     case JSON.parse(msg)['type']
     when 'MsgOffer'
       msg = MsgOffer.new.from_json!(msg)
-      msg.from = Actor.current
+      msg.from = self
       @session.beat (lambda do |user| user.send_message(msg) if user.to? msg.to["id"] end)
     when 'MsgAnswer'
       msg = MsgAnswer.new.from_json!(msg)
-      msg.from = Actor.current
+      msg.from = self
       @session.beat (lambda do |user| user.send_message(msg) if user.to? msg.to["id"] end)
     when 'MsgICE'
       msg = MsgICE.new.from_json!(msg)
-      msg.from = Actor.current
+      msg.from = self
       @session.beat (lambda do |user| user.send_message(msg) if user.to? msg.to["id"] end)
     when 'MsgUpdate'
       msg = MsgUpdate.new(nil).from_json!(msg)
@@ -144,6 +134,6 @@ class User
   end
 
   def on_close
-    @session.on_leave(Actor.current)
+    @session.on_leave(self)
   end
 end

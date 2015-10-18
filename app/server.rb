@@ -20,6 +20,7 @@ class Server < Angelo::Base
   end
 
   websocket '/session/:session_id' do |ws|
+    websockets[:users] << ws # store websocket in helper
     session_id = params[:session_id].to_sym
 
     # create session -> debug only feature?
