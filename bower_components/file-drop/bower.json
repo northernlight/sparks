@@ -1,0 +1,30 @@
+{
+  "name": "file-drop",
+  "version": "0.0.2",
+  "authors": [
+    "Chad Liu <chadliu23@gmail.com>"
+  ],
+  "description": "Element providing file drop event notify",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "file drop", 
+    "drag and drop"
+  ],
+  "main": "file-drop.html",
+  "license": "MIT",
+  "homepage": "https://github.com/chadliu23/file-drop/",
+  "ignore": [
+    "/.*",
+    "/tests/",
+    "/demo/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
+  }
+}

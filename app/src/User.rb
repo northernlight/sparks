@@ -21,6 +21,7 @@ class User
   def initialize(session, id = SecureRandom.urlsafe_base64)
     @session = session
     @id = id
+    @files = []
     @cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
     @cipher.key = $config[:secret_key]
     @cipher.iv = @cipher.random_iv
@@ -74,6 +75,8 @@ class User
   def socket=(socket)
     @socket = socket
     @socket.on_message {|msg| self.on_message(msg)}
+    @socket.on_close { self.on_close }
+    @socket.on_error { self.on_close }
   end
 
   def send_message(msg)
@@ -110,6 +113,28 @@ class User
       @img = msg.object["img"]
       msg = MsgUpdate.new(self)
       @session.beat (lambda do |user| user.send_message(msg) end)
+    when 'MsgUpload'
+      msg = MsgUpload.new().from_json!(msg)
+      case msg.fileType
+        when 'Avatar'
+          mime, form, data = msg.data.split(/[;,]/, 3)
+          extension = case mime
+            when "data:image/png" then ".png"
+            when "data:image/jpeg" then ".jpg"
+            when "data:image/gif" then ".gif"
+          end
+          filename = "#{SecureRandom.urlsafe_base64}#{extension}"
+          path = "app/public/uploads/#{filename}"
+          @files << path
+          File.open(path, 'wb+') do |f|
+            f.write(Base64.decode64(data))
+          end
+          self.img = "/uploads/#{filename}"
+          msg = MsgUpdate.new(self)
+          @session.beat (lambda do |user| user.send_message(msg) end)
+        else
+          send_message(MsgError.new("unknown upload type"))
+      end
     else
       puts "Unkown message type #{JSON.parse(msg)['type']}"
     end
@@ -135,5 +160,8 @@ class User
 
   def on_close
     @session.on_leave(self)
+    @files.each{|file|
+      File.unlink(file)
+    }
   end
 end

@@ -1,0 +1,67 @@
+<!--
+    @license
+    Copyright (c) 2014 Chad Liu. All rights reserved.
+-->
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+Element providing file drop event notify.
+
+##### Example
+
+    <file-drop></file-drop>
+
+@element file-drop
+@blurb Element providing file drop event notify.
+@status alpha
+@homepage http://chadliu23.github.io/file-drop
+-->
+<dom-module id="file-drop">
+
+  <template>
+  <content></content>
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: "file-drop",
+      /**
+       * The `file-dropped` event is fired whenever file dropped inside
+       * <file-drop> element.
+       *
+       * @event file-dropped
+       * @detail {{files: Files}}
+       */
+      ready: function(){
+        this.ondragover = function (e) {
+            e.stopPropagation();
+            this.progressInvisible = true;
+            if( !this.classList.contains("hover") ) {
+              this.classList.add("hover");
+            }
+            return false;
+          }
+          this.ondragleave = function () {
+            if( this.classList.contains("hover") ) {
+              this.classList.remove("hover");
+            }
+            return false;
+          }
+          this.ondrop = function(event){
+            event.preventDefault();
+            if( this.classList.contains("hover") ) {
+              this.classList.remove("hover");
+            }
+            this.fire('file-dropped', {files:event.dataTransfer.files});
+            
+          }
+      },
+
+
+    });
+
+  </script>
+
+</dom-module>

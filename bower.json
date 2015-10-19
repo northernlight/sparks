@@ -21,6 +21,7 @@
     "paper-input": "PolymerElements/paper-input#~1.0.15",
     "masonry": "~3.3.2",
     "requirejs": "~2.1.20",
-    "paper-fab": "PolymerElements/paper-fab#~1.0.5"
+    "paper-fab": "PolymerElements/paper-fab#~1.0.5",
+    "file-drop": "~0.0.2"
   }
 }

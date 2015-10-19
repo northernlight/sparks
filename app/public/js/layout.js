@@ -27,27 +27,27 @@ var app = null;
     window.location.assign("/");
   };
 
+  app.showMessage = function(msg) {
+    var toast = document.querySelector('#toast');
+    toast.set('text', msg);
+    toast.show();
+  }
+
   /**
     *
     */
   app.onMessage = function(msg) {
     switch(msg.type) {
       case 'MsgChat':
-        var toast = document.querySelector('#toast');
-        toast.set('text', "<" + msg.from.name + "> " + msg.message);
-        toast.show();
+        app.showMessage("<" + msg.from.name + "> " + msg.message);
         break;
       case 'MsgNewUser':
         break;
       case 'MsgJoin':
-        var toast = document.querySelector('#toast');
-        toast.set('text', "User " + msg.user.name + " joined");
-        toast.show();
+        app.showMessage("User " + msg.user.name + " joined");
         break;
       case 'MsgLeave':
-        var toast = document.querySelector('#toast');
-        toast.set('text', "User " + msg.user.name + " left");
-        toast.show();
+        app.showMessage("User " + msg.user.name + " left")
         // CAUTION: FALLTROUGH
       case 'MsgAnswer': // CAUTION: FALLTROUGH
       case 'MsgUpdate': // CAUTION: FALLTROUGH

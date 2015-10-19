@@ -4,7 +4,9 @@
     <paper-toolbar class="toolbar tall">
       <contact-card class="bottom">
         <template is="dom-if" if="{{user.img}}">
-          <img src="{{user.img}}" alt="Avatar">
+          <file-drop>
+            <img src="{{user.img}}" alt="Avatar">
+          </file-drop>
         </template>
         <paper-input value="{{user.name::change}}"></paper-input>
       </contact-card>
@@ -19,5 +21,31 @@
           notify: true
         }
       },
+      listeners: {
+        'file-dropped': 'fileDropped'
+      },
+      fileDropped: function(files) {
+        if((file = _.first(files.detail.files)) != null) {
+          // validate file size (max 500kb)
+          if(file.size > 500 * 1024) {
+            app.showMessage("Avatar file size too big (max 500kb)!");
+          } else if(!_.includes(['image/png', 'image/jpeg', 'image/gif'], file.type)) {
+            app.showMessage("Wrong file type (allowed: jpg, png and gif)!");
+          } else {
+            // start upload
+            var reader = new window.FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function() {
+              var msg = JSON.stringify({
+                'type': 'MsgUpload',
+                'fileType': 'Avatar',
+                'file': file,
+                'data': reader.result
+              });
+              app.sendMessage(msg);
+             }
+          }
+        }
+      }
     });
   </script></dom-module>
