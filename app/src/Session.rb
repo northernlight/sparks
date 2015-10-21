@@ -28,13 +28,17 @@ class Session
 
   def on_leave(user)
     @users.delete_if {|peer| peer.to? user.id}
-    @users.each {|peer|
-      begin
-        peer.send_message(MsgLeave.new(user))
-      rescue Exception => e
-        puts e.inspect
-      end
-    }
+    if(@users.empty?)
+      $sessions.delete(@id)
+    else
+      @users.each {|peer|
+        begin
+          peer.send_message(MsgLeave.new(user))
+        rescue Exception => e
+          puts e.inspect
+        end
+      }
+    end
   end
 
   def beat(fun)

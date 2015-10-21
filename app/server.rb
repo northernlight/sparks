@@ -14,9 +14,10 @@ class Server < Angelo::Base
   log_level Logger::INFO
 
   get '/' do
-    session = Session.new
-    $sessions[session.id.to_sym] = session
-    redirect "/session/#{session.id}"
+#    session = Session.new
+#    $sessions[session.id.to_sym] = session
+#    redirect "/session/#{session.id}"
+    erb :index
   end
 
   websocket '/session/:session_id' do |ws|

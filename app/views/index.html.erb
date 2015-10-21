@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sparks Beta</title>
+
+  <!-- build:css bower_components/font-awesome/css/font-awesome.min.js -->
+  <link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css">
+  <!-- endbuild-->
+
+  <!-- build:js bower_components/lodash/lodash.min.js -->
+  <script src="/bower_components/lodash/lodash.js"></script>
+  <!-- endbuild -->
+
+  <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+  <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <!-- endbuild -->
+
+  <!-- will be replaced with elements/elements.vulcanized.html -->
+  <link rel="import" href="/elements/elements.html">
+  <!-- endreplace-->
+
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="/styles/main.css">
+  <!-- endbuild-->
+
+  <!-- For shared styles, shared-styles.html import in elements.html -->
+  <style is="custom-style" include="index-styles">
+  </style>
+
+  </style>
+</head>
+<body unresolved class="fullbleed layout vertical index">
+  <template is="dom-bind" id="app">
+    <!-- Main Area -->
+    <paper-scroll-header-panel main condenses keep-condensed-header>
+
+      <!-- Main Toolbar -->
+      <paper-toolbar id="mainToolbar" class="tall">
+        <span class="flex"></span>
+
+        <!-- Toolbar links -->
+        <nav>
+          <a href="https://github.com/northernlight/sparks">
+            <i class="fa fa-github fa-2x"></i>
+          </a>
+          <a href="/#about">
+            <i class="fa fa-question-circle fa-2x"></i>
+          </a>
+        </nav>
+
+        <!-- Application name -->
+        <div class="middle middle-container center horizontal layout">
+            <div class="app-name">
+              <i class="fa fa-cogs fa-inverse"></i> Sparks <span class="small">beta</span>
+            </div>
+        </div>
+
+        <!-- Application sub title -->
+        <div class="bottom bottom-container center horizontal layout">
+          <div class="bottom-title paper-font-subhead">Sparks ist hip. Sparks ist cool.</div>
+        </div>
+
+      </paper-toolbar>
+
+      <!-- Main Content -->
+      <div class="content">
+        <section id="intro">
+          <div class="container">
+            <paper-input id="sessionID" label="Create or join a session" char-counter auto-validate pattern="[a-zA-Z0-9]*" maxlength="32" error-message="letters and numbers only!" size="32"></paper-input>
+          </div>
+        </section>
+        <section id="about" class="content">
+          <div class="container">
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+          </div>
+        </section>
+      </div>
+    </paper-scroll-header-panel>
+  </template>
+
+  <!-- build:js scripts/layout.min.js -->
+  <script src="/js/layout.js"></script>
+  <!-- endbuild-->
+</body>

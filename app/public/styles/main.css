@@ -1,12 +1,3 @@
-/*
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-
 body {
   background: #fafafa;
   font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -30,4 +21,74 @@ video {
 
 .send-message {
   padding: 0 16px 6px 16px;
+}
+
+.small {
+  font-size: 12px;
+}
+
+paper-toolbar#mainToolbar {
+  background: rgba(0, 0, 0, 0);
+  -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
+  -moz-transition: background .5s ease-in-out,padding .5s ease-in-out;
+  transition: background .5s ease-in-out,padding .5s ease-in-out;
+}
+
+paper-toolbar#mainToolbar.condensed {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+nav a {
+  float: left;
+  position: relative;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  transition: background .3s ease-in-out;
+  display: block;
+  padding: 10px 15px;
+  line-height: 20px;
+  color: #fff;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.app-name .fa {
+  color: #000;
+}
+
+.app-name .fa-inverse {
+  color: #fff;
+}
+
+body.index {
+  background: #000;
+}
+
+section {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+section#intro {
+  height: 100%;
+  background: url(../images/intro-bg.jpg) no-repeat bottom center scroll;
+  background-color: #000;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+  margin-top: -192px;
+  padding-top: 192px;
+}
+
+section .container {
+  width: 50%;
+  height: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
