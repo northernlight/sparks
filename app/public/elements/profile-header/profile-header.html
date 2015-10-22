@@ -8,7 +8,7 @@
             <img src="{{user.img}}" alt="Avatar">
           </file-drop>
         </template>
-        <paper-input value="{{user.name::change}}"></paper-input>
+        <paper-input value="{{user.name::change}}" required auto-validate error-message="needs some text!"></paper-input>
       </contact-card>
     </paper-toolbar>
   </template>
