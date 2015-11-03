@@ -13,6 +13,9 @@ class Server < Angelo::Base
   report_errors!
   log_level Logger::INFO
 
+  addr '0.0.0.0'
+  port ENV['PORT'] if ENV['PORT']
+
   get '/' do
 #    session = Session.new
 #    $sessions[session.id.to_sym] = session
@@ -50,4 +53,4 @@ class Server < Angelo::Base
   end
 end
 
-Server.run! "0.0.0.0"
+Server.run!

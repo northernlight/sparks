@@ -69,6 +69,7 @@ GEM
       domain_name (~> 0.5)
     http-form_data (1.0.1)
     http_parser.rb (0.6.0)
+    liquid (3.0.6)
     mime-types (2.6.2)
     mustermann (0.4.0)
       tool (~> 0.2)
@@ -95,6 +96,7 @@ PLATFORMS
 
 DEPENDENCIES
   angelo
+  liquid
 
 BUNDLED WITH
    1.10.6
