@@ -25,6 +25,8 @@
     "file-drop": "~0.0.2",
     "paper-badge": "PolymerElements/paper-badge#~1.0.4",
     "font-awesome": "~4.4.0",
-    "vis": "~4.9.0"
+    "vis": "~4.9.0",
+    "chance": "~0.8.0",
+    "iron-form": "PolymerElements/iron-form#~1.0.10"
   }
 }

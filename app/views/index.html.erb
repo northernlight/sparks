@@ -12,6 +12,10 @@
   <script src="/bower_components/lodash/lodash.js"></script>
   <!-- endbuild -->
 
+  <!-- build:js bower_components/chance/chance.min.js -->
+  <script src="/bower_components/chance/chance.js"></script>
+  <!-- endbuild -->
+
   <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
   <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <!-- endbuild -->
@@ -26,8 +30,6 @@
 
   <!-- For shared styles, shared-styles.html import in elements.html -->
   <style is="custom-style" include="index-styles">
-  </style>
-
   </style>
 </head>
 <body unresolved class="fullbleed layout vertical index">
@@ -58,7 +60,7 @@
 
         <!-- Application sub title -->
         <div class="bottom bottom-container center horizontal layout">
-          <div class="bottom-title paper-font-subhead">Sparks ist hip. Sparks ist cool.</div>
+          <div class="bottom-title paper-font-subhead">Sparks is hip. Sparks is cool.</div>
         </div>
 
       </paper-toolbar>
@@ -67,12 +69,17 @@
       <div class="content">
         <section id="intro">
           <div class="container">
-            <paper-input id="sessionID" label="Create or join a session" char-counter auto-validate pattern="[a-zA-Z0-9]*" maxlength="32" error-message="letters and numbers only!" size="32"></paper-input>
+            <form is="iron-form" id="sessionForm" method="get" action="/session">
+              <paper-input id="sessionID" label="Create or join a session" char-counter auto-validate pattern="[a-zA-Z0-9]*" maxlength="32" error-message="letters and numbers only!" size="32" value="{{sessionID}}"></paper-input>
+            </form>
           </div>
         </section>
         <section id="about" class="content">
           <div class="container">
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+            <div class="user-story">
+              <i class="fa fa-inverse fa-video-camera fa-4x fa-pull-left fa-border"></i>
+              Use this awesome tool to communicate and Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+            </div>
           </div>
         </section>
       </div>
@@ -82,4 +89,8 @@
   <!-- build:js scripts/layout.min.js -->
   <script src="/js/layout.js"></script>
   <!-- endbuild-->
+
+  <script>
+    app.sessionID = chance.word({syllables: 5});
+  </script>
 </body>
