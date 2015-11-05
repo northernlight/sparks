@@ -30,6 +30,13 @@
 
   <!-- For shared styles, shared-styles.html import in elements.html -->
   <style is="custom-style" include="index-styles">
+    paper-input.huge {
+      --paper-input-container-input: {
+        text-align: center;
+        font-weight: bold;
+        font-size: 36px;
+      };
+    }
   </style>
 </head>
 <body unresolved class="fullbleed layout vertical index">
@@ -70,7 +77,8 @@
         <section id="intro">
           <div class="container">
             <form is="iron-form" id="sessionForm" method="get" action="/session">
-              <paper-input id="sessionID" label="Create or join a session" char-counter auto-validate pattern="[a-zA-Z0-9]*" maxlength="32" error-message="letters and numbers only!" size="32" value="{{sessionID}}"></paper-input>
+              <paper-input class="huge" label="Create or join a session" char-counter auto-validate pattern="[a-zA-Z0-9]*" maxlength="20" error-message="letters and numbers only!" size="20" value="{{sessionID}}" autofocus>
+              </paper-input>
             </form>
           </div>
         </section>

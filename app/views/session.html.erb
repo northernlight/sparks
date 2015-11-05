@@ -2,14 +2,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Session running</title>
+  <title>Sparks Beta</title>
 
   <!-- build:css styles/main.css -->
   <link rel="stylesheet" href="/styles/main.css">
   <!-- endbuild-->
 
+  <!-- build:css bower_components/font-awesome/css/font-awesome.min.js -->
+  <link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css">
+  <!-- endbuild-->
+
   <!-- build:js bower_components/lodash/lodash.min.js -->
   <script src="/bower_components/lodash/lodash.js"></script>
+  <!-- endbuild -->
+
+  <!-- build:js bower_components/chance/chance.min.js -->
+  <script src="/bower_components/chance/chance.js"></script>
   <!-- endbuild -->
 
   <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
@@ -34,6 +42,10 @@
 
   <!-- For shared styles, shared-styles.html import in elements.html -->
   <style is="custom-style" include="shared-styles">
+    paper-badge.small {
+      --paper-badge-width: 16px;
+      --paper-badge-height: 16px;
+    }
   </style>
 </head>
 <body unresolved class="fullbleed layout vertical">
@@ -61,32 +73,40 @@
           <span class="flex"></span>
 
           <!-- Toolbar icons -->
-          <paper-icon-button icon="communication:call-end" on-click="onButtonLeaveClick"></paper-icon-button>
+          <paper-icon-button id="usersButton" icon="icons:account-circle" paper-drawer-toggle></paper-icon-button>
+          <paper-badge class="small" for="usersButton" label="{{usersCount}}"></paper-badge>
+          <paper-icon-button id="shareButton" icon="social:share" onclick="document.getElementById('share').open()"></paper-icon-button>
+          <paper-icon-button id="leaveButton" icon="communication:call-end" on-click="onButtonLeaveClick"></paper-icon-button>
 
           <!-- Application name -->
           <div class="middle middle-container center horizontal layout">
-            <div class="app-name">Sparks Beta</div>
+              <div class="app-name">
+                <i class="fa fa-cogs fa-inverse"></i> Sparks <span class="small">beta</span>
+              </div>
           </div>
 
           <!-- Application sub title -->
           <div class="bottom bottom-container center horizontal layout">
-            <div class="bottom-title paper-font-subhead">Add your friends with this url: blabla</div>
+            <div class="bottom-title paper-font-subhead">Sparks is hip. Sparks is cool.</div>
           </div>
-
         </paper-toolbar>
 
         <!-- Main Content -->
-        <div class="content">
+        <div id="content">
+          <!-- Dialogs -->
+          <paper-dialog id="share" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+            <h2>Share session</h2>
+            <paper-input id="inputSessionID" label="Session URL" value="{{joinURL}}" size="64" onclick="copy(event, copiedSessionID)"></paper-input>
+            <p>TODO: add Facebook, Twitter, G+ here …</p>
+          </paper-dialog>
+
           <paper-material elevation="1">
             <div id="videos">
               <div class="video spacer"></div>
               <video id="localVideo" class="video x2" autoplay>Video stream not available.</video>
             </div>
           </paper-material>
-          <div class="send-message horizontal layout">
-              <paper-input class="flex" label="Type message..." id="input" value="{{input}}"></paper-input>
-              <paper-fab icon="send" id="sendButton" on-tap="sendMyMessage"></paper-fab>
-          </div>
+          <chat-input></chat-input>
         </div>
       </paper-scroll-header-panel>
     </paper-drawer-panel>
