@@ -1,0 +1,10 @@
+:host ::content {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  margin: 0 10px 10px;
+}
+
+:host ::content div > paper-fab{
+  margin-right: 20px;
+}

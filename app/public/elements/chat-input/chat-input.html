@@ -1,0 +1,55 @@
+<dom-module id="chat-input">
+  <link rel="import" type="css" href="chat-input.css">
+  <template>
+    <div class="chat-input horizontal layout">
+        <paper-input class="flex" label="Type message..." on-keydown="checkForEnter" id="input" value="{{message}}" autofocus></paper-input>
+        <paper-fab icon="send" on-tap="sendMessage" id="sendButton" ></paper-fab>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'chat-input',
+      properties: {
+        message: String
+      },
+      listeners: {
+        'file-dropped': 'fileDropped'
+      },
+      fileDropped: function(files) {
+        if((file = _.first(files.detail.files)) != null) {
+          // validate file size (max 1000kb)
+          if(file.size > 1000 * 1024) {
+            app.showMessage("File size too big (max 1000kb)!");
+          } else {
+            // start upload
+            var reader = new window.FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function() {
+              var msg = JSON.stringify({
+                'type': 'MsgUpload',
+                'fileType': 'Chat',
+                'file': file,
+                'data': reader.result
+              });
+              app.sendMessage(msg);
+             }
+          }
+        }
+      },
+      sendMessage: function(event) {
+        if(!this.message) return; // if the input field is empty, do nothing.
+        var msg = JSON.stringify({
+          type: 'MsgChat',
+          message: this.message
+        });
+        app.broadcast(msg);
+        this.message = "";
+      },
+      checkForEnter: function (event) {
+        // check if 'enter' was pressed
+        if (event.keyCode === 13) {
+          this.sendMessage(event);
+        }
+      }
+    });
+  </script></dom-module>
