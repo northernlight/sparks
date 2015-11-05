@@ -124,6 +124,10 @@ run = function() {
       app.sendMessage = function(msg) {
         socket.send(msg);
       }.bind(socket);
+
+      app.broadcast = function(msg) {
+        _.forEach(_.values(app.users), function(user) { user.dataChannel.send(msg); });
+      }
     };
 
     socket.onmessage = function (event) {

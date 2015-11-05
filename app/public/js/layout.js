@@ -8,9 +8,11 @@ var app = null;
   // See https://github.com/Polymer/polymer/issues/1381
   window.addEventListener('WebComponentsReady', function() {
     // imports are loaded and elements have been registered
-    app.$.sessionForm.addEventListener('submit', function(e) {
-      window.location = "/session/" + app.sessionID;
-    });
+    if(app.$.sessionForm) {
+      app.$.sessionForm.addEventListener('submit', function(e) {
+        window.location = "/session/" + app.sessionID;
+      });
+    }
   });
 
   addEventListener('paper-header-transform', function(e) {

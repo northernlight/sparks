@@ -9,6 +9,9 @@ var app = null;
     'name': 'anonymous',
     'img': '/images/fruit-icons/1.png'
   };
+  app.usersCount = 0;
+  app.joinURL = document.URL;
+
 
   // Listen for template bound event to know when bindings
   // have resolved and content has been stamped to the page
@@ -53,6 +56,10 @@ var app = null;
       case 'MsgUpdate': // CAUTION: FALLTROUGH
       case 'MsgLeave': // CAUTION: FALLTROUGH
       case 'MsgOffer':
+        app.usersCount = _.keys(app.users).length;
+        if(app.usersCount == 1) {
+          document.getElementById("content").scrollIntoView();
+        }
         app.$.peerList.set("peers", _.map(_.values(app.users), function(user) {
           return user.getInfo();
         }));
@@ -86,15 +93,6 @@ var app = null;
     app.msnry.layout();
   }
 
-  app.sendMyMessage = function(e) {
-    if(!app.input) return; // if the input field is empty, do nothing.
-    var msg = JSON.stringify({
-      type: 'MsgChat',
-      message: app.input
-    });
-    _.forEach(_.values(app.users), function(user) { user.dataChannel.send(msg); });
-  };
-
   app.addEventListener('me-changed', function(e) {
     var msg = JSON.stringify({
       type: "MsgUpdate",
@@ -103,3 +101,17 @@ var app = null;
     this.sendMessage(msg);
   });
 })(document);
+
+function copy(event, callback) {
+  event.srcElement.select();
+  try {
+    document.execCommand('copy');
+    callback(event);
+  } catch (err) {
+  }
+};
+
+function copiedSessionID(event) {
+  app.showMessage("Copied to clipboard!");
+  app.$.share.close();
+}

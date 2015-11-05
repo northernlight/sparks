@@ -1,5 +1,5 @@
 body {
-  background: #1e1e1e;
+  background: url("/images/blackorchid.png") #000;
   font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #333;
 }
@@ -23,7 +23,7 @@ video {
   padding: 0 16px 6px 16px;
 }
 
-.small {
+span.small {
   font-size: 12px;
 }
 
@@ -61,10 +61,6 @@ nav a {
   color: #fff;
 }
 
-body.index {
-  background: #000;
-}
-
 section {
   display: flex;
   width: 100%;
@@ -73,8 +69,7 @@ section {
 
 section#intro {
   height: 100%;
-  background: url(../images/intro-bg.jpg) no-repeat bottom center scroll;
-  background-color: #000;
+  background: url(../images/intro-bg.png) no-repeat bottom center scroll;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
