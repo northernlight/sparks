@@ -110,7 +110,7 @@ User.prototype.getInfo = function() {
 run = function() {
   'use strict';
   // == Step 1: setup local video stream == //
-  navigator.getUserMedia({audio: false, video: true}, function(stream) {
+  navigator.getUserMedia({audio: true, video: true}, function(stream) {
     var video = document.getElementById("localVideo");
     video.src = window.URL.createObjectURL(stream);
     video.onloadedmetadata = function(e) {
