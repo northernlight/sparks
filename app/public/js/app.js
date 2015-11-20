@@ -113,6 +113,7 @@ run = function() {
   navigator.getUserMedia({audio: true, video: true}, function(stream) {
     var video = document.getElementById("localVideo");
     video.src = window.URL.createObjectURL(stream);
+    video.muted = true;
     video.onloadedmetadata = function(e) {
       video.play();
     };
