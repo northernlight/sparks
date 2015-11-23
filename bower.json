@@ -29,6 +29,7 @@
     "chance": "~0.8.0",
     "iron-form": "PolymerElements/iron-form#~1.0.10",
     "paper-dialog": "PolymerElements/paper-dialog#~1.0.2",
-    "neon-animation": "PolymerElements/neon-animation#~1.0.8"
+    "neon-animation": "PolymerElements/neon-animation#~1.0.8",
+    "sigma": "~1.0.3"
   }
 }

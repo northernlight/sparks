@@ -30,6 +30,69 @@ var app = null;
     window.location.assign("/");
   };
 
+  app.onButtonDeveloperClick = function() {
+
+    // knock on the network
+    app.requestNetworkMesh();
+    // and listen to the sound
+    document.getElementById('developerDialog').open();
+    var myNode = document.getElementById("graph-container");
+    while (myNode.firstChild) {
+      myNode.removeChild(myNode.firstChild);
+    }
+    var s = new sigma({
+      renderer: {
+        container: document.getElementById('graph-container'),
+        type: 'canvas'
+      },
+      settings: {
+        doubleClickEnabled: false,
+        minEdgeSize: 0.5,
+        maxEdgeSize: 4,
+        enableEdgeHovering: true,
+        edgeHoverColor: 'edge',
+        defaultEdgeHoverColor: '#000',
+        edgeHoverSizeRatio: 1,
+        edgeHoverExtremities: true,
+      }
+    });
+    s.graph.addNode({
+      id: app.me.id,
+      label: 'You: ' + app.me.name,
+      x: Math.random() * 600,
+      y: Math.random() * 400,
+      size: 26,
+      color: '#333'
+    });
+    _.forEach(_.values(app.users), function(user) {
+      s.graph.addNode({
+        id: user.id,
+        label: 'Peer: ' + user.name,
+        x: Math.random() * 600,
+        y: Math.random() * 400,
+        size: 16,
+        color: '#666'
+      });
+    });
+    app.onInfoReceive = function(msg) {
+      _.forOwn(msg.data, function(value, key) {
+        _.forEach(value, function(val) {
+          s.graph.addEdge({
+            id: 'e' + key + val,
+            source: key,
+            target: val,
+            size: Math.random(),
+            type: 'curve',
+            color: '#ccc',
+            hover_color: '#000'
+          });
+        });
+      });
+      s.refresh();
+    };
+    s.refresh();
+  };
+
   app.showMessage = function(msg) {
     var toast = document.querySelector('#toast');
     toast.set('text', msg);
@@ -64,7 +127,66 @@ var app = null;
           return user.getInfo();
         }));
         break;
+      case 'MsgFlood':
+        if(msg.ttl > 0) {
+          if(msg.to == null) {
+            app.onMessage(msg.message);
+            var msgFrom = msg.from;
+            msg.from = app.me;
+            msg.ttl--;
+            app.broadcast(msg, (user => user.id != msgFrom.id));
+          } else if(msg.to == app.me) {
+            app.onMessage(msg.message);
+          } else {
+            app.sendP2P(msg.message, msg.to);
+          }
+        }
+        break;
+      case 'MsgInfo':
+        switch(msg.method) {
+          case 'Get':
+            switch(msg.topic) {
+              case 'NetworkMesh':
+                var data = {};
+                data[app.me.id] = _.map(_.filter(_.values(app.users), function(user) { return user.dataChannel != null }), (user => user.id));
+                var msgResponse = JSON.stringify({
+                  type: "MsgInfo",
+                  method: "Set",
+                  topic: "NetworkMesh",
+                  data: data
+                });
+                app.sendP2P(msgResponse, msg.to);
+                break;
+              default:
+                console.warn("MsgInfo: No such topic " + msg.topic);
+                break;
+            }
+            break;
+          case 'Set':
+            app.onInfoReceive(msg);
+            console.warn("MsgInfo: set() not yet implemented")
+            break;
+          default:
+            console.warn("MsgInfo: No such method " + msg.method);
+            break;
+        }
+
+        break;
     }
+  }
+
+  app.requestNetworkMesh = function() {
+    app.broadcast(JSON.stringify({
+      type: "MsgFlood",
+      ttl: 8,
+      from: app.me,
+      message: {
+        type: "MsgInfo",
+        method: "Get",
+        topic: "NetworkMesh",
+        to: app.me
+      }
+    }));
   }
 
   app.addStream = function(event) {
