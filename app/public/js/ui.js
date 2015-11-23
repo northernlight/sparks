@@ -64,7 +64,65 @@ var app = null;
           return user.getInfo();
         }));
         break;
+      case 'MsgFlood':
+        if(msg.ttl > 0) {
+          if(msg.to == null) {
+            app.onMessage(msg.message);
+            var msgFrom = msg.from;
+            msg.from = app.me;
+            msg.ttl--;
+            app.broadcast(msg, (user => user.id != msgFrom.id));
+          } else if(msg.to == app.me) {
+            app.onMessage(msg.message);
+          } else {
+            app.sendP2P(msg.message, msg.to);
+          }
+        }
+        break;
+      case 'MsgInfo':
+        switch(msg.method) {
+          case 'Get':
+            switch(msg.topic) {
+              case 'NetworkMesh':
+                var data = {};
+                data[app.me.id] = _.map(_.filter(_.values(app.users), function(user) { return user.dataChannel != null }), (user => user.id));
+                var msgResponse = JSON.stringify({
+                  type: "MsgInfo",
+                  method: "Set",
+                  topic: "NetworkMesh",
+                  data: data
+                });
+                app.sendP2P(msgResponse, msg.to);
+                break;
+              default:
+                console.warn("MsgInfo: No such topic " + msg.topic);
+                break;
+            }
+            break;
+          case 'Set':
+            console.warn("MsgInfo: set() not yet implemented")
+            break;
+          default:
+            console.warn("MsgInfo: No such method " + msg.method);
+            break;
+        }
+
+        break;
     }
+  }
+
+  app.getMesh = function() {
+    app.broadcast(JSON.stringify({
+      type: "MsgFlood",
+      ttl: 8,
+      from: app.me,
+      message: {
+        type: "MsgInfo",
+        method: "Get",
+        topic: "NetworkMesh",
+        to: app.me
+      }
+    }));
   }
 
   app.addStream = function(event) {

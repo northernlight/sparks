@@ -13,7 +13,7 @@ function User(user, callback) {
   this.connection = new PeerConnection();
   this.dataChannel = this.connection.createDataChannel("data");
   this.dataChannel.onmessage = function(msg) {
-    console.log("p2p: " + msg);
+    console.log("p2p: " + msg.data);
     var msg = JSON.parse(msg.data);
     msg.from = this.getInfo();
     app.onMessage(msg);
@@ -126,9 +126,23 @@ run = function() {
         socket.send(msg);
       }.bind(socket);
 
-      app.broadcast = function(msg) {
-        _.forEach(_.values(app.users), function(user) { user.dataChannel.send(msg); });
-      }
+      app.broadcast = function(msg, selector) {
+        selector = ((typeof selector !== 'undefined')? selector : (user => true));
+        _.forEach(_.values(app.users), function(user) { if(selector(user)) user.dataChannel.send(msg); }.bind(selector));
+      };
+
+      app.sendP2P = function(message, to) {
+        if(typeof to != undefined && to.id in app.users && app.users[to.id].dataChannel != null) {
+            app.users[to.id].dataChannel.send(message);
+        } else {
+          app.broadcast(JSON.stringify({
+            type: "MsgFlood",
+            ttl: 8,
+            to: to,
+            message: message
+          }));
+        }
+      };
     };
 
     socket.onmessage = function (event) {
