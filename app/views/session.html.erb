@@ -20,6 +20,10 @@
   <script src="/bower_components/chance/chance.js"></script>
   <!-- endbuild -->
 
+  <!-- build:js bower_components/sigma.js/sigma.min.js -->
+  <script src="/bower_components/sigma.js/sigma.min.js"></script>
+  <!-- endbuild -->
+
   <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
   <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <!-- endbuild -->
@@ -73,6 +77,7 @@
           <span class="flex"></span>
 
           <!-- Toolbar icons -->
+          <paper-icon-button id="developersButton" icon="icons:build" on-click="onButtonDeveloperClick"></paper-icon-button>
           <paper-icon-button id="usersButton" icon="icons:account-circle" paper-drawer-toggle></paper-icon-button>
           <paper-badge class="small" for="usersButton" label="{{usersCount}}"></paper-badge>
           <paper-icon-button id="shareButton" icon="social:share" onclick="document.getElementById('share').open()"></paper-icon-button>
@@ -98,6 +103,11 @@
             <h2>Share session</h2>
             <paper-input id="inputSessionID" label="Session URL" value="{{joinURL}}" size="64" onclick="copy(event, copiedSessionID)"></paper-input>
             <p>TODO: add Facebook, Twitter, G+ here …</p>
+          </paper-dialog>
+
+          <paper-dialog id="developerDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+            <h2>Developer Information</h2>
+            <div id="graph-container"></div>
           </paper-dialog>
 
           <paper-material elevation="1">
